@@ -292,6 +292,68 @@
   .dq-intro-rules li{padding:7px 0;font-size:15px;color:var(--text);display:flex;align-items:center;gap:10px}
   .dq-intro-rules li::before{content:'⚡';flex-shrink:0}
 
+  /* ---------- laboratorio simulador ---------- */
+  #lab{padding:0}
+  .lab-wrap{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+  .lab-back{background:none;border:none;color:var(--muted);font-family:var(--display);font-size:13px;cursor:pointer;padding:4px 0 14px;letter-spacing:.05em}
+  .lab-back:hover{color:var(--cyan)}
+  .lab-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--cyan);letter-spacing:.08em;margin-bottom:4px}
+  .lab-sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+  .lab-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .lab-tab{background:none;border:1px solid rgba(0,229,255,.2);color:var(--muted);font-family:var(--display);font-size:12px;letter-spacing:.06em;border-radius:20px;padding:7px 16px;cursor:pointer;transition:.2s}
+  .lab-tab:hover{border-color:var(--cyan);color:var(--cyan)}
+  .lab-tab.active{background:rgba(0,229,255,.12);border-color:var(--cyan);color:var(--cyan)}
+  .lab-panel{display:none}
+  .lab-panel.active{display:block}
+  /* módulo VIR */
+  .vir-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+  @media(max-width:520px){.vir-grid{grid-template-columns:1fr}}
+  .vir-card{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.15);border-radius:14px;padding:16px}
+  .vir-label{font-family:var(--display);font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+  .vir-val{font-family:var(--display);font-size:36px;font-weight:700;color:var(--cyan);line-height:1}
+  .vir-val.volt-c{color:var(--volt)}
+  .vir-val.res-c{color:var(--magenta)}
+  .vir-val.cur-c{color:var(--green)}
+  .vir-unit{font-size:16px;opacity:.6}
+  .vir-slider{width:100%;accent-color:var(--cyan);margin-top:10px}
+  .vir-formula{background:rgba(255,230,0,.07);border:1px solid rgba(255,230,0,.2);border-radius:10px;padding:12px 16px;text-align:center;margin-bottom:16px}
+  .vir-formula-eq{font-family:var(--display);font-size:20px;color:var(--volt);letter-spacing:.06em}
+  .vir-formula-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+  .vir-canvas-wrap{text-align:center;margin-bottom:8px}
+  .vir-canvas{border-radius:10px;background:#080c14;width:100%;max-width:460px}
+  .vir-locked{font-size:11px;color:var(--muted);margin-top:6px;text-align:center}
+  .vir-solve-btn{display:inline-block;background:none;border:1px solid rgba(0,229,255,.35);color:var(--cyan);font-family:var(--display);font-size:12px;letter-spacing:.06em;border-radius:8px;padding:6px 16px;cursor:pointer;margin-top:8px;transition:.2s}
+  .vir-solve-btn:hover{background:rgba(0,229,255,.1)}
+  .vir-solve-btn.active-btn{background:rgba(0,229,255,.18);border-color:var(--cyan)}
+  /* módulo colores */
+  .col-wrap{display:flex;flex-direction:column;gap:16px}
+  .col-bands{display:flex;gap:10px;align-items:flex-end;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+  .col-band-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .col-band-lbl{font-size:11px;color:var(--muted);font-family:var(--display);letter-spacing:.05em}
+  .col-swatch{width:36px;height:80px;border-radius:6px;border:2px solid rgba(255,255,255,.15);transition:.2s}
+  .col-select{background:#0d1520;border:1px solid rgba(0,229,255,.2);color:var(--text);font-family:var(--body);font-size:13px;border-radius:8px;padding:5px 8px;cursor:pointer;width:90px;text-align:center}
+  .col-result{text-align:center;background:rgba(255,230,0,.07);border:1px solid rgba(255,230,0,.2);border-radius:12px;padding:14px}
+  .col-result-val{font-family:var(--display);font-size:30px;font-weight:700;color:var(--volt)}
+  .col-result-tol{font-size:13px;color:var(--muted);margin-top:4px}
+  .col-resistor-svg{display:block;margin:0 auto 10px}
+  /* módulo circuito */
+  .circ-controls{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+  .circ-mode{display:flex;gap:8px;margin-bottom:4px}
+  .circ-mode-btn{flex:1;background:none;border:1px solid rgba(0,229,255,.2);color:var(--muted);font-family:var(--display);font-size:12px;letter-spacing:.05em;border-radius:8px;padding:8px;cursor:pointer;transition:.2s}
+  .circ-mode-btn.active{background:rgba(0,229,255,.12);border-color:var(--cyan);color:var(--cyan)}
+  .circ-r-row{display:flex;align-items:center;gap:10px}
+  .circ-r-lbl{font-family:var(--display);font-size:12px;color:var(--muted);min-width:28px}
+  .circ-r-inp{background:#0d1520;border:1px solid rgba(0,229,255,.2);color:var(--text);font-family:var(--display);font-size:15px;border-radius:8px;padding:6px 10px;width:90px}
+  .circ-r-unit{font-size:12px;color:var(--muted)}
+  .circ-add-btn{background:none;border:1px solid rgba(35,255,157,.3);color:var(--green);font-family:var(--display);font-size:12px;border-radius:8px;padding:6px 14px;cursor:pointer;transition:.2s}
+  .circ-add-btn:hover{background:rgba(35,255,157,.1)}
+  .circ-rm-btn{background:none;border:none;color:var(--magenta);font-size:16px;cursor:pointer;padding:0 4px}
+  .circ-vsrc{display:flex;align-items:center;gap:10px}
+  .circ-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+  .circ-res-card{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:12px;text-align:center}
+  .circ-res-val{font-family:var(--display);font-size:24px;font-weight:700;color:var(--cyan)}
+  .circ-res-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+  .circ-canvas{width:100%;max-width:480px;display:block;margin:0 auto;border-radius:10px;background:#080c14}
   /* ---------- leaderboard ---------- */
   .lb-btn{
     display:inline-flex;align-items:center;gap:6px;
@@ -982,6 +1044,7 @@
       <h1>Centro de Operaciones</h1>
       <p id="hubGreet">Selecciona una sesión para continuar tu entrenamiento</p>
       <button class="desafio-btn" onclick="show('desafio');dqStart()" style="margin-top:10px">⚡ Modo Desafío Rápido</button>
+      <button class="desafio-btn" onclick="show('lab');labInit()" style="margin-top:8px;background:rgba(35,255,157,.08);border-color:rgba(35,255,157,.4);color:var(--green)">🔬 Laboratorio Virtual</button>
     </div>
 
     <!-- aviso de ascenso de rango -->
@@ -1895,6 +1958,153 @@
       <span class="ico">🔧</span>
       Contenido de esta sesión <b>en construcción</b>.<br>
       Aquí montaremos las actividades, simuladores y evaluaciones en el siguiente paso.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LABORATORIO VIRTUAL ===================== -->
+<section id="lab" class="screen">
+  <div class="lab-wrap">
+    <button class="lab-back" onclick="show('hub')">← Volver al centro</button>
+    <div class="lab-title">🔬 Laboratorio Virtual</div>
+    <div class="lab-sub">Experimenta con los principios fundamentales de la electricidad</div>
+
+    <div class="lab-tabs">
+      <button class="lab-tab active" onclick="labTab('vir',this)">⚡ Ley de Ohm</button>
+      <button class="lab-tab" onclick="labTab('col',this)">🎨 Código de Colores</button>
+      <button class="lab-tab" onclick="labTab('circ',this)">🔗 Circuitos</button>
+    </div>
+
+    <!-- ===== MÓDULO 1: V-I-R ===== -->
+    <div id="labVir" class="lab-panel active">
+      <div class="vir-formula" id="virFormula">
+        <div class="vir-formula-eq" id="virEq">V = I × R</div>
+        <div class="vir-formula-lbl" id="virEqLbl">Voltaje = Corriente × Resistencia</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="vir-solve-btn active-btn" id="btnSolveV" onclick="virSetSolve('V')">Calcular V</button>
+        <button class="vir-solve-btn" id="btnSolveI" onclick="virSetSolve('I')">Calcular I</button>
+        <button class="vir-solve-btn" id="btnSolveR" onclick="virSetSolve('R')">Calcular R</button>
+      </div>
+      <div class="vir-grid">
+        <div class="vir-card" id="cardV">
+          <div class="vir-label">VOLTAJE</div>
+          <div><span class="vir-val volt-c" id="virVval">12</span><span class="vir-unit"> V</span></div>
+          <input type="range" class="vir-slider" id="virVslider" min="1" max="24" value="12" oninput="virUpdate()">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>1 V</span><span>24 V</span></div>
+        </div>
+        <div class="vir-card" id="cardI">
+          <div class="vir-label">CORRIENTE</div>
+          <div><span class="vir-val cur-c" id="virIval">0.12</span><span class="vir-unit"> A</span></div>
+          <input type="range" class="vir-slider" id="virIslider" min="1" max="100" value="12" oninput="virUpdate()" style="accent-color:var(--green)">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>0.01 A</span><span>1 A</span></div>
+        </div>
+        <div class="vir-card" id="cardR">
+          <div class="vir-label">RESISTENCIA</div>
+          <div><span class="vir-val res-c" id="virRval">100</span><span class="vir-unit"> Ω</span></div>
+          <input type="range" class="vir-slider" id="virRslider" min="1" max="100" value="50" oninput="virUpdate()" style="accent-color:var(--magenta)">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>10 Ω</span><span>1 kΩ</span></div>
+        </div>
+        <div class="vir-card">
+          <div class="vir-label">POTENCIA</div>
+          <div><span class="vir-val" id="virPval" style="color:#bb86fc">1.44</span><span class="vir-unit"> W</span></div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted)">P = V × I</div>
+          <div style="margin-top:4px;font-size:11px;color:var(--muted)" id="virPbar"></div>
+        </div>
+      </div>
+      <div class="vir-locked" id="virLockedMsg">🔒 El parámetro calculado (V) cambia automáticamente</div>
+      <div class="vir-canvas-wrap">
+        <canvas class="vir-canvas" id="virCanvas" width="460" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== MÓDULO 2: CÓDIGO DE COLORES ===== -->
+    <div id="labCol" class="lab-panel">
+      <div class="col-wrap">
+        <div style="text-align:center;margin-bottom:8px">
+          <svg class="col-resistor-svg" width="260" height="60" id="colSvg" viewBox="0 0 260 60">
+            <line x1="0" y1="30" x2="260" y2="30" stroke="#74838e" stroke-width="3"/>
+            <rect x="60" y="10" width="140" height="40" rx="8" fill="#c8a96e" stroke="#a08040" stroke-width="1.5"/>
+            <rect id="cb1" x="82" y="8" width="18" height="44" rx="3" fill="#000"/>
+            <rect id="cb2" x="108" y="8" width="18" height="44" rx="3" fill="#880000"/>
+            <rect id="cb3" x="134" y="8" width="18" height="44" rx="3" fill="#ff0000"/>
+            <rect id="cb4" x="165" y="12" width="14" height="36" rx="3" fill="#ffd700" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="col-bands">
+          <div class="col-band-col">
+            <div class="col-band-lbl">BANDA 1</div>
+            <div class="col-swatch" id="sw1"></div>
+            <select class="col-select" id="cb1sel" onchange="colUpdate()">
+              <option value="0">Negro</option><option value="1" selected>Marrón</option><option value="2">Rojo</option>
+              <option value="3">Naranja</option><option value="4">Amarillo</option><option value="5">Verde</option>
+              <option value="6">Azul</option><option value="7">Violeta</option><option value="8">Gris</option><option value="9">Blanco</option>
+            </select>
+          </div>
+          <div class="col-band-col">
+            <div class="col-band-lbl">BANDA 2</div>
+            <div class="col-swatch" id="sw2"></div>
+            <select class="col-select" id="cb2sel" onchange="colUpdate()">
+              <option value="0">Negro</option><option value="1">Marrón</option><option value="2">Rojo</option>
+              <option value="3">Naranja</option><option value="4">Amarillo</option><option value="5" selected>Verde</option>
+              <option value="6">Azul</option><option value="7">Violeta</option><option value="8">Gris</option><option value="9">Blanco</option>
+            </select>
+          </div>
+          <div class="col-band-col">
+            <div class="col-band-lbl">MULTIPLICADOR</div>
+            <div class="col-swatch" id="sw3"></div>
+            <select class="col-select" id="cb3sel" onchange="colUpdate()">
+              <option value="1">Negro ×1</option><option value="10">Marrón ×10</option><option value="100" selected>Rojo ×100</option>
+              <option value="1000">Naranja ×1k</option><option value="10000">Amarillo ×10k</option>
+              <option value="100000">Verde ×100k</option><option value="1000000">Azul ×1M</option>
+              <option value="0.1">Dorado ×0.1</option><option value="0.01">Plata ×0.01</option>
+            </select>
+          </div>
+          <div class="col-band-col">
+            <div class="col-band-lbl">TOLERANCIA</div>
+            <div class="col-swatch" id="sw4"></div>
+            <select class="col-select" id="cb4sel" onchange="colUpdate()">
+              <option value="±1%">Marrón ±1%</option><option value="±2%">Rojo ±2%</option>
+              <option value="±0.5%">Verde ±0.5%</option><option value="±0.25%">Azul ±0.25%</option>
+              <option value="±0.1%">Violeta ±0.1%</option><option value="±5%" selected>Dorado ±5%</option>
+              <option value="±10%">Plata ±10%</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-result">
+          <div class="col-result-val" id="colResVal">1 500 Ω</div>
+          <div class="col-result-tol" id="colResTol">Tolerancia: ±5% → entre 1 425 Ω y 1 575 Ω</div>
+        </div>
+        <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:14px;font-size:13px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--cyan);font-family:var(--display);font-size:11px;letter-spacing:.08em">TABLA DE REFERENCIA</b><br>
+          Negro=0 · Marrón=1 · Rojo=2 · Naranja=3 · Amarillo=4<br>
+          Verde=5 · Azul=6 · Violeta=7 · Gris=8 · Blanco=9<br>
+          <span style="color:var(--volt)">Dorado=±5% · Plata=±10%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MÓDULO 3: CIRCUITOS ===== -->
+    <div id="labCirc" class="lab-panel">
+      <div class="circ-controls">
+        <div>
+          <div style="font-family:var(--display);font-size:11px;color:var(--muted);letter-spacing:.08em;margin-bottom:6px">MODO DE CONEXIÓN</div>
+          <div class="circ-mode">
+            <button class="circ-mode-btn active" id="circBtnSerie" onclick="circSetMode('serie',this)">Serie</button>
+            <button class="circ-mode-btn" id="circBtnPar" onclick="circSetMode('paralelo',this)">Paralelo</button>
+          </div>
+        </div>
+        <div class="circ-vsrc">
+          <div style="font-family:var(--display);font-size:11px;color:var(--muted);letter-spacing:.08em;min-width:80px">FUENTE (V)</div>
+          <input type="range" class="vir-slider" id="circVslider" min="1" max="24" value="12" oninput="circUpdate()" style="flex:1">
+          <span class="vir-val volt-c" id="circVval" style="font-size:22px;min-width:50px">12</span>
+          <span style="font-size:13px;color:var(--muted)">V</span>
+        </div>
+        <div id="circRrows"></div>
+        <button class="circ-add-btn" onclick="circAddR()" id="circAddBtn">+ Añadir resistencia</button>
+      </div>
+      <div class="circ-results" id="circResults"></div>
+      <canvas class="circ-canvas" id="circCanvas" width="480" height="200"></canvas>
     </div>
   </div>
 </section>
@@ -4041,6 +4251,394 @@ async function downloadSelf(){
   }
 })();
 
+
+/* ==================== LABORATORIO VIRTUAL ==================== */
+
+/* --- helpers --- */
+function labInit(){
+  virSetSolve('V');
+  colUpdate();
+  circInit();
+}
+function labTab(id, btn){
+  document.querySelectorAll('.lab-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.lab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lab'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('active');
+}
+
+/* ---- MÓDULO 1: LEY DE OHM ---- */
+let virSolve='V'; // qué variable se calcula
+
+function virSetSolve(v){
+  virSolve=v;
+  ['V','I','R'].forEach(x=>{
+    const btn=document.getElementById('btnSolve'+x);
+    const card=document.getElementById('card'+x);
+    if(!btn||!card) return;
+    const active=(x===v);
+    btn.classList.toggle('active-btn', active);
+    // deshabilitar slider de la variable calculada
+    const sl=document.getElementById('virVslider'+(x==='V'?'':'').replace('V',x==='V'?'V':x));
+    const slMap={V:'virVslider',I:'virIslider',R:'virRslider'};
+    const s=document.getElementById(slMap[x]);
+    if(s) s.disabled=active;
+    card.style.opacity=active?'0.6':'1';
+  });
+  const eqMap={
+    V:['V = I × R','Voltaje = Corriente × Resistencia'],
+    I:['I = V / R','Corriente = Voltaje / Resistencia'],
+    R:['R = V / I','Resistencia = Voltaje / Corriente']
+  };
+  document.getElementById('virEq').textContent=eqMap[v][0];
+  document.getElementById('virEqLbl').textContent=eqMap[v][1];
+  document.getElementById('virLockedMsg').textContent='🔒 El parámetro calculado ('+v+') cambia automáticamente';
+  virUpdate();
+}
+
+function virUpdate(){
+  const Vsl=document.getElementById('virVslider');
+  const Isl=document.getElementById('virIslider');
+  const Rsl=document.getElementById('virRslider');
+  // sliders: V→1-24, I→1-100 (÷100 = 0.01-1A), R→1-100 (×10 = 10-1000Ω)
+  let V=parseFloat(Vsl.value);
+  let I=parseFloat(Isl.value)/100;
+  let R=parseFloat(Rsl.value)*10;
+
+  if(virSolve==='V')      V=parseFloat((I*R).toFixed(3));
+  else if(virSolve==='I'){ I=R===0?0:parseFloat((V/R).toFixed(4)); }
+  else if(virSolve==='R'){ R=I===0?0:parseFloat((V/I).toFixed(2)); }
+
+  const P=parseFloat((V*I).toFixed(3));
+
+  document.getElementById('virVval').textContent=V;
+  document.getElementById('virIval').textContent=I.toFixed(3);
+  document.getElementById('virRval').textContent=R>=1000?(R/1000).toFixed(2)+'k':R;
+  document.getElementById('virPval').textContent=P>=1?P.toFixed(2):(P*1000).toFixed(1);
+  document.querySelector('#cardP .vir-unit')||null;
+  // potencia unidad
+  const pu=document.querySelector('#virPval')?.nextElementSibling;
+  if(pu) pu.textContent=P>=1?' W':' mW';
+
+  virDrawCircuit(V,I,R,P);
+}
+
+function virDrawCircuit(V,I,R,P){
+  const cv=document.getElementById('virCanvas');
+  if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  // fondo
+  ctx.fillStyle='#080c14';
+  ctx.fillRect(0,0,W,H);
+
+  const lx=60, rx=W-60, ty=40, by=H-40, cx=W/2, cy=H/2;
+  const lineW=3;
+
+  // alambres
+  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=lineW; ctx.lineJoin='round';
+  ctx.beginPath();
+  ctx.moveTo(lx,ty); ctx.lineTo(rx,ty);  // top
+  ctx.moveTo(rx,ty); ctx.lineTo(rx,by);  // right
+  ctx.moveTo(lx,by); ctx.lineTo(rx,by);  // bottom
+  ctx.stroke();
+
+  // batería (izquierda)
+  const bh=50;
+  ctx.strokeStyle='#ffe600'; ctx.lineWidth=lineW;
+  ctx.beginPath(); ctx.moveTo(lx,ty); ctx.lineTo(lx,cy-bh/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(lx,cy+bh/2); ctx.lineTo(lx,by); ctx.stroke();
+  // placas
+  [[cy-bh/2,20,3],[cy-bh/2+10,12,1.5],[cy+bh/2-10,20,3],[cy+bh/2,12,1.5]].forEach(([y,len,lw])=>{
+    ctx.strokeStyle='#ffe600'; ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.moveTo(lx-len/2,y); ctx.lineTo(lx+len/2,y); ctx.stroke();
+  });
+  // + -
+  ctx.fillStyle='#ffe600'; ctx.font='bold 14px monospace';
+  ctx.fillText('+', lx-22, cy-bh/2+5);
+  ctx.fillText('−', lx-22, cy+bh/2+5);
+  // V label
+  ctx.fillStyle='#ffe600'; ctx.font='bold 13px Chakra Petch,monospace';
+  ctx.textAlign='center';
+  ctx.fillText(V+'V', lx, cy+bh/2+28);
+
+  // resistor (arriba, centrado)
+  const rw=90, rh=22, ry=ty-rh/2;
+  ctx.fillStyle='#c8a96e';
+  ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.roundRect?ctx.roundRect(cx-rw/2,ry,rw,rh,5):ctx.rect(cx-rw/2,ry,rw,rh);
+  ctx.fill(); ctx.stroke();
+  // zigzag dentro
+  ctx.strokeStyle='#60340a'; ctx.lineWidth=2;
+  ctx.beginPath();
+  const zx=cx-rw/2+8, zw=rw-16, zcy=ty;
+  for(let i=0;i<=8;i++){
+    const px=zx+i*(zw/8), py=zcy+(i%2===0?-5:5);
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  // R label
+  ctx.fillStyle='#ff1f6b'; ctx.font='bold 12px Chakra Petch,monospace';
+  ctx.textAlign='center';
+  ctx.fillText((R>=1000?(R/1000).toFixed(1)+'kΩ':R+'Ω'), cx, ry-6);
+
+  // flecha de corriente (abajo)
+  const arrowY=by;
+  ctx.strokeStyle='#23ff9d'; ctx.lineWidth=2;
+  ctx.fillStyle='#23ff9d';
+  // línea con flecha de derecha a izquierda
+  ctx.beginPath();
+  ctx.moveTo(rx-20,arrowY); ctx.lineTo(lx+20,arrowY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(lx+20,arrowY); ctx.lineTo(lx+32,arrowY-5); ctx.lineTo(lx+32,arrowY+5); ctx.closePath();
+  ctx.fill();
+  // I label
+  ctx.fillStyle='#23ff9d'; ctx.font='bold 12px Chakra Petch,monospace';
+  ctx.textAlign='center';
+  ctx.fillText('I = '+(I*1000<1?I.toFixed(3)+'A':(I*1000).toFixed(1)+'mA'), cx, arrowY+18);
+
+  // P label (derecha)
+  ctx.fillStyle='#bb86fc'; ctx.font='12px Chakra Petch,monospace';
+  ctx.textAlign='left';
+  ctx.fillText('P = '+(P>=1?P.toFixed(2)+'W':(P*1000).toFixed(1)+'mW'), rx+8, cy);
+
+  ctx.textAlign='left';
+}
+
+/* ---- MÓDULO 2: CÓDIGO DE COLORES ---- */
+const COL_COLORS={
+  '0':{css:'#000000',name:'Negro'},
+  '1':{css:'#8B4513',name:'Marrón'},
+  '2':{css:'#cc0000',name:'Rojo'},
+  '3':{css:'#ff6600',name:'Naranja'},
+  '4':{css:'#ffcc00',name:'Amarillo'},
+  '5':{css:'#007700',name:'Verde'},
+  '6':{css:'#0000cc',name:'Azul'},
+  '7':{css:'#8800cc',name:'Violeta'},
+  '8':{css:'#888888',name:'Gris'},
+  '9':{css:'#eeeeee',name:'Blanco'}
+};
+const COL_TOL={
+  '±1%':{css:'#8B4513'},
+  '±2%':{css:'#cc0000'},
+  '±0.5%':{css:'#007700'},
+  '±0.25%':{css:'#0000cc'},
+  '±0.1%':{css:'#8800cc'},
+  '±5%':{css:'#ffd700'},
+  '±10%':{css:'#aaaaaa'}
+};
+const COL_MULT={
+  '1':{css:'#000000'},'10':{css:'#8B4513'},'100':{css:'#cc0000'},
+  '1000':{css:'#ff6600'},'10000':{css:'#ffcc00'},'100000':{css:'#007700'},
+  '1000000':{css:'#0000cc'},'0.1':{css:'#ffd700'},'0.01':{css:'#aaaaaa'}
+};
+
+function colUpdate(){
+  const b1=document.getElementById('cb1sel').value;
+  const b2=document.getElementById('cb2sel').value;
+  const b3=document.getElementById('cb3sel').value;
+  const b4=document.getElementById('cb4sel').value;
+
+  // swatches
+  document.getElementById('sw1').style.background=COL_COLORS[b1].css;
+  document.getElementById('sw2').style.background=COL_COLORS[b2].css;
+  document.getElementById('sw3').style.background=COL_MULT[b3]?.css||'#888';
+  document.getElementById('sw4').style.background=COL_TOL[b4]?.css||'#ffd700';
+
+  // SVG bands
+  document.getElementById('cb1').setAttribute('fill',COL_COLORS[b1].css);
+  document.getElementById('cb2').setAttribute('fill',COL_COLORS[b2].css);
+  document.getElementById('cb3').setAttribute('fill',COL_MULT[b3]?.css||'#888');
+  document.getElementById('cb4').setAttribute('fill',COL_TOL[b4]?.css||'#ffd700');
+
+  const val=(parseInt(b1)*10+parseInt(b2))*parseFloat(b3);
+  const tol=b4;
+  const tolPct=parseFloat(tol)/100;
+  const lo=Math.round(val*(1-Math.abs(tolPct)));
+  const hi=Math.round(val*(1+Math.abs(tolPct)));
+
+  function fmtR(v){
+    if(v>=1e6) return (v/1e6).toFixed(v%1e6===0?0:2)+' MΩ';
+    if(v>=1e3) return (v/1e3).toFixed(v%1e3===0?0:2)+' kΩ';
+    return v+' Ω';
+  }
+  document.getElementById('colResVal').textContent=fmtR(val);
+  document.getElementById('colResTol').textContent=
+    'Tolerancia: '+tol+' → entre '+fmtR(lo)+' y '+fmtR(hi);
+}
+
+/* ---- MÓDULO 3: CIRCUITOS SERIE/PARALELO ---- */
+let circMode='serie';
+let circRs=[100,220]; // valores de resistencias en Ω
+
+function circInit(){
+  circMode='serie';
+  circRs=[100,220];
+  circRenderRows();
+  circUpdate();
+}
+
+function circSetMode(m,btn){
+  circMode=m;
+  document.querySelectorAll('.circ-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  circUpdate();
+}
+
+function circAddR(){
+  if(circRs.length>=4) return;
+  circRs.push(470);
+  circRenderRows();
+  circUpdate();
+  if(circRs.length>=4) document.getElementById('circAddBtn').disabled=true;
+}
+
+function circRemoveR(i){
+  if(circRs.length<=1) return;
+  circRs.splice(i,1);
+  document.getElementById('circAddBtn').disabled=false;
+  circRenderRows();
+  circUpdate();
+}
+
+function circRenderRows(){
+  const container=document.getElementById('circRrows');
+  container.innerHTML=circRs.map((r,i)=>`
+    <div class="circ-r-row">
+      <span class="circ-r-lbl">R${i+1}</span>
+      <input class="circ-r-inp" type="number" min="1" max="100000" value="${r}"
+        oninput="circRs[${i}]=Math.max(1,parseFloat(this.value)||1);circUpdate()">
+      <span class="circ-r-unit">Ω</span>
+      ${circRs.length>1?`<button class="circ-rm-btn" onclick="circRemoveR(${i})">✕</button>`:''}
+    </div>`).join('');
+}
+
+function circUpdate(){
+  const V=parseInt(document.getElementById('circVslider').value);
+  document.getElementById('circVval').textContent=V;
+
+  let Req, currents=[], voltages=[];
+  if(circMode==='serie'){
+    Req=circRs.reduce((a,b)=>a+b,0);
+    const I=V/Req;
+    circRs.forEach(r=>{ currents.push(I); voltages.push(I*r); });
+  } else {
+    const invSum=circRs.reduce((a,r)=>a+1/r,0);
+    Req=1/invSum;
+    circRs.forEach(r=>{ voltages.push(V); currents.push(V/r); });
+  }
+  const Itotal=circMode==='serie'?V/Req:currents.reduce((a,b)=>a+b,0);
+
+  function fmtI(a){ return a>=1?a.toFixed(3)+' A':(a*1000).toFixed(2)+' mA'; }
+  function fmtR(r){ return r>=1000?(r/1000).toFixed(2)+' kΩ':r.toFixed(1)+' Ω'; }
+
+  document.getElementById('circResults').innerHTML=`
+    <div class="circ-res-card"><div class="circ-res-val volt-c">${fmtR(Req)}</div><div class="circ-res-lbl">R equivalente</div></div>
+    <div class="circ-res-card"><div class="circ-res-val cur-c">${fmtI(Itotal)}</div><div class="circ-res-lbl">Corriente total</div></div>
+    ${circRs.map((r,i)=>`
+    <div class="circ-res-card" style="border-color:rgba(255,31,107,.2)">
+      <div class="circ-res-val" style="font-size:16px;color:var(--magenta)">R${i+1}: ${fmtI(currents[i])}<br><span style="color:var(--volt)">${voltages[i].toFixed(2)} V</span></div>
+      <div class="circ-res-lbl">I${i+1} · V${i+1}</div>
+    </div>`).join('')}`;
+
+  circDraw(V, Req, Itotal, voltages, currents);
+}
+
+function circDraw(V, Req, Itotal, voltages, currents){
+  const cv=document.getElementById('circCanvas');
+  if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#080c14'; ctx.fillRect(0,0,W,H);
+
+  const n=circRs.length;
+  const lx=55, rx=W-20, ty=30, by=H-30;
+  const bx=lx, cy2=(ty+by)/2;
+
+  // batería
+  ctx.strokeStyle='#ffe600'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(bx,ty+10); ctx.lineTo(bx,cy2-20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx,cy2+20); ctx.lineTo(bx,by-10); ctx.stroke();
+  [[cy2-20,18,2.5],[cy2-10,12,1.5],[cy2+10,18,2.5],[cy2+20,12,1.5]].forEach(([y,len,lw])=>{
+    ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.moveTo(bx-len/2,y); ctx.lineTo(bx+len/2,y); ctx.stroke();
+  });
+  ctx.fillStyle='#ffe600'; ctx.font='bold 11px monospace'; ctx.textAlign='center';
+  ctx.fillText(V+'V', bx, by+10);
+  // líneas top/bottom batería a circuito
+  ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(bx,ty); ctx.lineTo(rx,ty); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(rx,by); ctx.stroke();
+
+  if(circMode==='serie'){
+    // resistencias en serie a lo largo de la línea superior
+    const margin=20, totalW=rx-lx-margin*2;
+    const rw=Math.min(60, totalW/n-10);
+    const gap=(totalW-rw*n)/(n+1);
+    circRs.forEach((r,i)=>{
+      const x1=lx+margin+gap*(i+1)+rw*i;
+      const x2=x1+rw;
+      // resistor box
+      ctx.fillStyle='#c8a96e'; ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.roundRect?ctx.roundRect(x1,ty-12,rw,24,4):ctx.rect(x1,ty-12,rw,24);
+      ctx.fill(); ctx.stroke();
+      // label
+      ctx.fillStyle='#ff1f6b'; ctx.font='bold 10px Chakra Petch,monospace'; ctx.textAlign='center';
+      const rv=circRs[i]; ctx.fillText('R'+(i+1)+':'+(rv>=1000?(rv/1000).toFixed(1)+'k':rv)+'Ω', (x1+x2)/2, ty-16);
+      ctx.fillStyle='#ffe600'; ctx.font='10px monospace';
+      ctx.fillText(voltages[i].toFixed(1)+'V', (x1+x2)/2, ty+30);
+    });
+    // línea derecha cierre
+    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(rx,ty); ctx.lineTo(rx,by); ctx.stroke();
+    // I arrow bottom
+    ctx.strokeStyle='#23ff9d'; ctx.fillStyle='#23ff9d'; ctx.lineWidth=2;
+    const aw=rx-lx-60; const ax=lx+30;
+    ctx.beginPath(); ctx.moveTo(rx-30,by); ctx.lineTo(ax,by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax,by); ctx.lineTo(ax+10,by-5); ctx.lineTo(ax+10,by+5); ctx.closePath(); ctx.fill();
+    ctx.font='bold 11px Chakra Petch,monospace'; ctx.textAlign='center';
+    ctx.fillText('I = '+(Itotal>=1?Itotal.toFixed(3)+'A':(Itotal*1000).toFixed(1)+'mA'), (lx+rx)/2, by+14);
+  } else {
+    // paralelo: ramas verticales
+    const margin=30;
+    const avail=rx-lx-margin;
+    const rw2=Math.min(70,(avail/n)-8);
+    const gap2=(avail-rw2*n)/(n+1);
+    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
+    // cierre derecho
+    ctx.beginPath(); ctx.moveTo(rx,ty); ctx.lineTo(rx,by); ctx.stroke();
+    circRs.forEach((r,i)=>{
+      const bx2=lx+margin+gap2*(i+1)+rw2*i+rw2/2;
+      // rama vertical
+      ctx.strokeStyle='#00e5ff'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(bx2,ty); ctx.lineTo(bx2,ty+22); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx2,by-22); ctx.lineTo(bx2,by); ctx.stroke();
+      // resistor
+      const rh2=44;
+      ctx.fillStyle='#c8a96e'; ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.roundRect?ctx.roundRect(bx2-rw2/2,ty+22,rw2,rh2,4):ctx.rect(bx2-rw2/2,ty+22,rw2,rh2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#ff1f6b'; ctx.font='bold 9px Chakra Petch,monospace'; ctx.textAlign='center';
+      const rv=circRs[i]; ctx.fillText('R'+(i+1), bx2, ty+38);
+      ctx.fillText((rv>=1000?(rv/1000).toFixed(1)+'k':rv)+'Ω', bx2, ty+50);
+      ctx.fillStyle='#23ff9d'; ctx.font='9px monospace';
+      const ci=currents[i]; ctx.fillText((ci>=1?ci.toFixed(2)+'A':(ci*1000).toFixed(1)+'mA'), bx2, by-26);
+    });
+    // I total
+    ctx.fillStyle='#23ff9d'; ctx.font='bold 11px Chakra Petch,monospace'; ctx.textAlign='center';
+    ctx.fillText('I total = '+(Itotal>=1?Itotal.toFixed(3)+'A':(Itotal*1000).toFixed(1)+'mA'), (lx+rx)/2, by+14);
+  }
+  ctx.textAlign='left';
+}
+
+/* ==================== /LABORATORIO VIRTUAL ==================== */
 </script>
 </body>
 </html>
