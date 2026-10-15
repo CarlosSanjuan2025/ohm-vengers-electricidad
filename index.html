@@ -4685,6 +4685,8 @@ function labInit(){
   virSetSolve('V');
   colUpdate();
   circInit();
+  labPotUpdate(); labEfiUpdate(); labR80Update(); labAwgUpdate();
+  s6Update(); s7Update(); s8Update(); s9Update();
 }
 
 /* sincronización slider ↔ número para módulo VIR */
@@ -5517,14 +5519,6 @@ function labAwgDraw(rec,I){
     ctx.font=(isRec?'bold ':'')+'9px monospace'; ctx.textAlign='center';
     ctx.fillText(r.awg, x, cy+d/2+11);
   });
-}
-
-/* ---- labInit actualizado ---- */
-const _labInitOrig=labInit;
-function labInit(){
-  _labInitOrig();
-  labPotUpdate(); labEfiUpdate(); labR80Update(); labAwgUpdate();
-  s6Update(); s7Update(); s8Update(); s9Update();
 }
 
 /* ==================== /MÓDULOS S6-S9 + LAB EXTRA ==================== */
