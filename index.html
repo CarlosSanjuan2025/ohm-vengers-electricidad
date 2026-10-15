@@ -219,6 +219,91 @@
   .status.open{color:var(--volt);border:1px solid rgba(255,230,0,.4);background:rgba(255,230,0,.08)}
   .status.lock{color:var(--muted);border:1px solid rgba(255,255,255,.12)}
 
+  /* ---------- leaderboard ---------- */
+  .lb-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:none;border:1px solid rgba(255,230,0,.5);
+    color:var(--volt);font-family:var(--display);font-weight:700;
+    letter-spacing:.08em;font-size:13px;padding:7px 14px;border-radius:8px;
+    cursor:pointer;transition:.2s;white-space:nowrap;
+  }
+  .lb-btn:hover{background:rgba(255,230,0,.12);border-color:var(--volt);}
+  /* overlay */
+  #lbOverlay{
+    display:none;position:fixed;inset:0;z-index:900;
+    background:rgba(6,7,9,.88);backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;padding:20px;
+  }
+  #lbOverlay.open{display:flex;}
+  .lb-modal{
+    width:100%;max-width:680px;max-height:90vh;overflow-y:auto;
+    background:#0d1117;border:1px solid rgba(255,230,0,.3);
+    border-radius:18px;box-shadow:0 0 60px rgba(255,230,0,.15);
+    padding:32px;
+  }
+  .lb-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;
+  }
+  .lb-title{
+    font-family:var(--display);font-size:22px;font-weight:700;
+    color:var(--volt);letter-spacing:.08em;
+  }
+  .lb-close{
+    background:none;border:1px solid rgba(255,255,255,.2);color:var(--text);
+    font-size:18px;width:36px;height:36px;border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:.2s;
+  }
+  .lb-close:hover{border-color:var(--volt);color:var(--volt);}
+  .lb-empty{
+    text-align:center;color:var(--muted);padding:40px 0;
+    font-size:16px;
+  }
+  .lb-table{width:100%;border-collapse:collapse;}
+  .lb-table th{
+    font-family:var(--display);font-size:11px;font-weight:700;
+    letter-spacing:.12em;color:var(--muted);text-transform:uppercase;
+    padding:0 10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .lb-table th:last-child,.lb-table td:last-child{text-align:center;}
+  .lb-table td{
+    padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.05);
+    font-size:15px;
+  }
+  .lb-table tr:last-child td{border-bottom:none;}
+  .lb-table tr:hover td{background:rgba(255,230,0,.04);}
+  .lb-rank-num{
+    font-family:var(--display);font-weight:700;font-size:18px;
+    color:var(--muted);min-width:32px;display:inline-block;text-align:center;
+  }
+  .lb-rank-num.top1{color:#ffd700;}
+  .lb-rank-num.top2{color:#c0c0c0;}
+  .lb-rank-num.top3{color:#cd7f32;}
+  .lb-name{font-weight:600;color:var(--text);}
+  .lb-grado{color:var(--muted);font-size:13px;}
+  .lb-score{
+    font-family:var(--display);font-weight:700;font-size:16px;color:var(--cyan);
+  }
+  .lb-pct-bar{
+    width:80px;height:6px;background:rgba(255,255,255,.1);
+    border-radius:3px;display:inline-block;vertical-align:middle;margin-right:6px;
+  }
+  .lb-pct-fill{height:100%;border-radius:3px;background:var(--cyan);}
+  .lb-pct-fill.perfect{background:var(--volt);}
+  .lb-date{color:var(--muted);font-size:12px;}
+  .lb-footer{
+    margin-top:20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+  .lb-count{color:var(--muted);font-size:13px;}
+  .lb-clear{
+    background:none;border:1px solid rgba(255,31,107,.4);
+    color:var(--magenta);font-family:var(--display);font-weight:700;
+    font-size:12px;letter-spacing:.08em;padding:7px 14px;
+    border-radius:8px;cursor:pointer;transition:.2s;
+  }
+  .lb-clear:hover{background:rgba(255,31,107,.12);}
+
   /* ---------- session intro panel ---------- */
   #session,#s1{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .s-wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vh,70px) 24px;width:100%}
@@ -678,6 +763,7 @@
       <span class="label">Misión</span>
       <span class="bar"><i id="progBar"></i></span>
       <span class="pct" id="progPct">0%</span>
+      <button class="lb-btn" onclick="openLeaderboard()" title="Tabla de clasificación">🏆 Ranking</button>
       <button class="reset-btn" onclick="resetProgress()" title="Reiniciar progreso">↺</button>
     </div>
   </div>
@@ -701,6 +787,21 @@
     <div class="cards" id="cards"></div>
   </div>
 </section>
+
+<!-- ===================== LEADERBOARD MODAL ===================== -->
+<div id="lbOverlay" onclick="closeLbOnOverlay(event)">
+  <div class="lb-modal">
+    <div class="lb-header">
+      <div class="lb-title">🏆 Tabla de Clasificación</div>
+      <button class="lb-close" onclick="closeLeaderboard()" aria-label="Cerrar">✕</button>
+    </div>
+    <div id="lbBody"></div>
+    <div class="lb-footer">
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-clear" onclick="clearLeaderboard()">🗑 Borrar tabla</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===================== SESIÓN 01 ===================== -->
 <section id="s1" class="screen">
@@ -2770,6 +2871,74 @@ function retryExam(){
   document.getElementById('finishExamBtn').disabled=true;
   document.getElementById('s5').scrollTop=0;
 }
+/* ==================== LEADERBOARD ==================== */
+const LB_KEY='ohmvengers_leaderboard';
+function saveToLeaderboard(name,grado,correct,pct){
+  try{
+    let entries=JSON.parse(localStorage.getItem(LB_KEY)||'[]');
+    entries.push({
+      name:name||'Agente',
+      grado:grado||'—',
+      correct:correct,
+      pct:pct,
+      date:new Date().toLocaleDateString('es-CO',{year:'numeric',month:'short',day:'numeric'})
+    });
+    // keep only the best score per name+grado combo
+    const map={};
+    entries.forEach(e=>{
+      const k=(e.name+'|'+e.grado).toLowerCase();
+      if(!map[k]||e.pct>map[k].pct) map[k]=e;
+    });
+    entries=Object.values(map);
+    // sort desc by pct then by name
+    entries.sort((a,b)=>b.pct-a.pct||a.name.localeCompare(b.name));
+    localStorage.setItem(LB_KEY,JSON.stringify(entries));
+  }catch(e){}
+}
+function renderLeaderboard(){
+  let entries=[];
+  try{entries=JSON.parse(localStorage.getItem(LB_KEY)||'[]');}catch(e){}
+  const body=document.getElementById('lbBody');
+  const count=document.getElementById('lbCount');
+  if(!entries.length){
+    body.innerHTML='<div class="lb-empty">⚡ Aún nadie ha completado la Misión Final en este dispositivo.<br>¡Sé el primero en conquistar el ranking!</div>';
+    count.textContent='';
+    return;
+  }
+  count.textContent=entries.length+' agente'+(entries.length===1?'':'s')+' en el ranking';
+  const medals=['top1','top2','top3'];
+  const rows=entries.map((e,i)=>{
+    const rankCls=medals[i]||'';
+    const fillCls=e.pct===100?'lb-pct-fill perfect':'lb-pct-fill';
+    return `<tr>
+      <td><span class="lb-rank-num ${rankCls}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span></td>
+      <td><div class="lb-name">${esc(e.name)}</div><div class="lb-grado">${esc(e.grado)}</div></td>
+      <td><span class="lb-score">${e.correct}/8</span></td>
+      <td>
+        <span class="lb-pct-bar"><span class="${fillCls}" style="width:${e.pct}%"></span></span>
+        ${e.pct}%
+      </td>
+      <td><span class="lb-date">${e.date}</span></td>
+    </tr>`;
+  }).join('');
+  body.innerHTML=`<table class="lb-table">
+    <thead><tr>
+      <th>#</th><th>Agente</th><th>Puntos</th><th>%</th><th>Fecha</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function openLeaderboard(){renderLeaderboard();document.getElementById('lbOverlay').classList.add('open');}
+function closeLeaderboard(){document.getElementById('lbOverlay').classList.remove('open');}
+function closeLbOnOverlay(e){if(e.target===document.getElementById('lbOverlay'))closeLeaderboard();}
+function clearLeaderboard(){
+  if(!confirm('¿Borrar toda la tabla de clasificación? Esta acción no se puede deshacer.'))return;
+  try{localStorage.removeItem(LB_KEY);}catch(e){}
+  renderLeaderboard();
+}
+/* ==================== /LEADERBOARD ==================== */
+
 function showCertificate(correct,pct){
   document.getElementById('certName').textContent=studentName.toUpperCase();
   const info=document.getElementById('certStudentInfo');
@@ -2780,6 +2949,8 @@ function showCertificate(correct,pct){
   document.getElementById('certScore').textContent=correct+'/8 ('+pct+'%)';
   const d=new Date();
   document.getElementById('certDate').textContent=d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+  // Guardar en la tabla de clasificación
+  saveToLeaderboard(studentName, studentData.grado, correct, pct);
   completed=Math.max(completed,5); saveProgress();
   gotoS5Step(2);
 }
