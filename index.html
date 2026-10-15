@@ -316,6 +316,8 @@
   .stat-lbl{font-family:var(--display);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-top:5px}
   .stats-reset{background:none;border:1px solid rgba(255,31,107,.3);color:var(--magenta);font-family:var(--display);font-size:12px;border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:4px;letter-spacing:.05em}
   .stats-reset:hover{background:rgba(255,31,107,.1)}
+  .lb-csv{background:none;border:1px solid rgba(35,255,157,.35);color:var(--green);font-family:var(--display);font-size:12px;letter-spacing:.05em;border-radius:8px;padding:6px 14px;cursor:pointer;transition:.2s}
+  .lb-csv:hover{background:rgba(35,255,157,.1);border-color:var(--green)}
   /* overlay */
   #lbOverlay{
     display:none;position:fixed;inset:0;z-index:900;
@@ -1014,6 +1016,7 @@
     <div id="lbBody"></div>
     <div class="lb-footer">
       <span class="lb-count" id="lbCount"></span>
+      <button class="lb-csv" onclick="exportLbCSV()">⬇ Exportar CSV</button>
       <button class="lb-clear" onclick="clearLeaderboard()">🗑 Borrar tabla</button>
     </div>
   </div>
@@ -3586,6 +3589,33 @@ function clearLeaderboard(){
   if(!confirm('¿Borrar toda la tabla de clasificación? Esta acción no se puede deshacer.'))return;
   try{localStorage.removeItem(LB_KEY);}catch(e){}
   renderLeaderboard();
+}
+function exportLbCSV(){
+  let entries=[];
+  try{entries=JSON.parse(localStorage.getItem(LB_KEY)||'[]');}catch(e){}
+  if(!entries.length){alert('La tabla de clasificación está vacía.');return;}
+  const BOM='﻿';
+  const header='Pos,Nombre,Grado,Aciertos,Porcentaje,Bonus,Tiempo,Fecha';
+  const rows=entries.map((e,i)=>[
+    i+1,
+    '"'+String(e.name||'').replace(/"/g,'""')+'"',
+    '"'+String(e.grado||'').replace(/"/g,'""')+'"',
+    e.score!==undefined?e.score:'',
+    e.pct!==undefined?e.pct+'%':'',
+    e.bonus!==undefined?e.bonus:'',
+    '"'+(e.time||'')+'"',
+    '"'+(e.date||'')+'"'
+  ].join(','));
+  const csv=BOM+header+'\n'+rows.join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const now=new Date();
+  const stamp=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  a.href=url; a.download='ohm-vengers-ranking-'+stamp+'.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 /* ==================== /LEADERBOARD ==================== */
 
