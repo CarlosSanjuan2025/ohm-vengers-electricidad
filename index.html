@@ -5099,8 +5099,9 @@ const AWG_DATA=[
   {awg:22, dia:0.64, area:0.32, cap:3,   uso:'Señales débiles'},
 ];
 function awgForCurrent(a){
-  for(const r of AWG_DATA) if(r.cap>=a) return r;
-  return AWG_DATA[0];
+  // Iterar del más fino al más grueso → retorna el calibre MÍNIMO adecuado
+  for(let i=AWG_DATA.length-1;i>=0;i--){ if(AWG_DATA[i].cap>=a) return AWG_DATA[i]; }
+  return AWG_DATA[0]; // si supera todo, retorna el más grueso disponible
 }
 
 /* ---- S6: Potencia ---- */
