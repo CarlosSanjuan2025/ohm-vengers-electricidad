@@ -1088,7 +1088,6 @@
       <button class="desafio-btn" onclick="show('desafio');dqStart()" style="margin-top:10px">⚡ Modo Desafío Rápido</button>
       <button class="desafio-btn" onclick="show('lab');labInit()" style="margin-top:8px;background:rgba(35,255,157,.08);border-color:rgba(35,255,157,.4);color:var(--green)">🔬 Laboratorio Virtual</button>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;justify-content:center">
-        <button class="desafio-btn" onclick="show('s6')" style="background:rgba(255,230,0,.07);border-color:rgba(255,230,0,.35);color:var(--volt);font-size:12px;padding:5px 10px">⚡ Potencia</button>
         <button class="desafio-btn" onclick="show('s7')" style="background:rgba(255,230,0,.07);border-color:rgba(255,230,0,.35);color:var(--volt);font-size:12px;padding:5px 10px">🔋 Eficiencia</button>
         <button class="desafio-btn" onclick="show('s8')" style="background:rgba(255,230,0,.07);border-color:rgba(255,230,0,.35);color:var(--volt);font-size:12px;padding:5px 10px">🔌 Regla 80%</button>
         <button class="desafio-btn" onclick="show('s9')" style="background:rgba(255,230,0,.07);border-color:rgba(255,230,0,.35);color:var(--volt);font-size:12px;padding:5px 10px">🔧 Cables AWG</button>
@@ -1640,7 +1639,43 @@
           <div class="p3-heat" id="p3Heat"></div>
         </div>
       </div>
-      <div class="s1nav"><span></span><button class="btn-next" id="s3p1next" disabled onclick="gotoS3Step(2)">Siguiente: Calibres AWG →</button></div>
+      <!-- Simulador visual de potencia -->
+      <div style="margin-top:18px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:14px;padding:16px">
+        <h3 style="font-family:var(--display);color:var(--cyan);font-size:15px;margin:0 0 12px">🔬 Simulación visual</h3>
+        <div class="mod-ctrl-row">
+          <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje (V)</span>
+          <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
+          <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
+          <span class="mod-unit">V</span>
+        </div>
+        <div class="mod-ctrl-row" style="margin-top:6px">
+          <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente (I)</span>
+          <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
+          <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
+          <span class="mod-unit">A</span>
+        </div>
+        <div class="mod-result-box" style="margin-top:10px">
+          <div>
+            <div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div>
+            <div class="mod-result-lbl">Potencia (W)</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div>
+            <div class="mod-result-lbl">equivalente</div>
+          </div>
+        </div>
+        <div class="mod-insight" id="s6Insight" style="margin-top:8px">Mueve los sliders para ver cómo cambia la potencia.</div>
+        <div class="mod-canvas-wrap" style="margin-top:10px">
+          <canvas class="mod-canvas" id="s6Canvas" width="460" height="180"></canvas>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;line-height:1.7">
+          <b style="color:var(--cyan)">Ejemplos cotidianos:</b><br>
+          💡 Bombillo LED: <b>10 W</b> · Bombillo incandescente: <b>60 W</b><br>
+          📱 Cargador celular: <b>5–20 W</b> · Ventilador: <b>40–80 W</b><br>
+          🌡️ Plancha ropa: <b>1000–2400 W</b> · Ducha eléctrica: <b>4000–6000 W</b>
+        </div>
+      </div>
+      <div class="s1nav" style="margin-top:16px"><span></span><button class="btn-next" id="s3p1next" disabled onclick="gotoS3Step(2)">Siguiente: Calibres AWG →</button></div>
     </div>
 
     <!-- PASO 2: Calibres AWG -->
@@ -2011,62 +2046,6 @@
 </section>
 
 <!-- ===================== S6 — POTENCIA ELÉCTRICA ===================== -->
-<section id="s6" class="screen">
-  <div class="s-wrap" style="overflow-y:auto;max-height:100vh">
-    <button class="back" onclick="goHub()">← Volver al centro</button>
-    <div class="mod-hero">
-      <div class="mod-icon">⚡</div>
-      <h2 class="s-title" style="margin-bottom:6px">Potencia Eléctrica</h2>
-      <p class="s-sub">¿Cuánta energía consume un dispositivo por segundo?</p>
-    </div>
-    <div class="mod-formula-box">
-      <span style="color:var(--volt)">P</span>
-      <span class="mf-sym">=</span>
-      <span style="color:var(--cyan)">V</span>
-      <span class="mf-sym">×</span>
-      <span style="color:var(--green)">I</span>
-      <span class="mf-sym">=</span>
-      <span style="color:var(--cyan)">V²</span><span class="mf-sym">/</span><span style="color:var(--magenta)">R</span>
-      <span class="mf-sym">=</span>
-      <span style="color:var(--green)">I²</span><span class="mf-sym">×</span><span style="color:var(--magenta)">R</span>
-    </div>
-    <div style="margin-bottom:10px">
-      <div class="mod-ctrl-row">
-        <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje (V)</span>
-        <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
-        <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
-        <span class="mod-unit">V</span>
-      </div>
-      <div class="mod-ctrl-row">
-        <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente (I)</span>
-        <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
-        <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
-        <span class="mod-unit">A</span>
-      </div>
-    </div>
-    <div class="mod-result-box">
-      <div>
-        <div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div>
-        <div class="mod-result-lbl">Potencia (W)</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div>
-        <div class="mod-result-lbl">equivalente</div>
-      </div>
-    </div>
-    <div class="mod-insight" id="s6Insight">Mueve los sliders para ver cómo cambia la potencia.</div>
-    <div class="mod-canvas-wrap">
-      <canvas class="mod-canvas" id="s6Canvas" width="460" height="180"></canvas>
-    </div>
-    <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:14px;margin-top:12px;font-size:14px;line-height:1.7">
-      <b style="color:var(--cyan)">Ejemplos cotidianos:</b><br>
-      💡 Bombillo LED: <b>10 W</b> · Bombillo incandescente: <b>60 W</b><br>
-      📱 Cargador celular: <b>5–20 W</b> · Ventilador: <b>40–80 W</b><br>
-      🌡️ Plancha ropa: <b>1000–2400 W</b> · Ducha eléctrica: <b>4000–6000 W</b>
-    </div>
-  </div>
-</section>
-
 <!-- ===================== S7 — EFICIENCIA ELÉCTRICA ===================== -->
 <section id="s7" class="screen">
   <div class="s-wrap" style="overflow-y:auto;max-height:100vh">
@@ -2590,7 +2569,6 @@ function show(id){
   if(typeof a11yAutoRead==='function') a11yAutoRead();
   if(typeof updateGlossFab==='function') updateGlossFab(id);
   // inicializar módulos al entrar
-  if(id==='s6') setTimeout(s6Update,50);
   if(id==='s7') setTimeout(s7Update,50);
   if(id==='s8') setTimeout(s8Update,50);
   if(id==='s9') setTimeout(s9Update,50);
@@ -3199,7 +3177,7 @@ function gotoS3Step(n){
   document.getElementById('s3label').textContent='Sesión 03 · Paso '+(n+1)+' de 5';
   document.getElementById('s3').scrollTop=0;
   if(s3AWGRAF){cancelAnimationFrame(s3AWGRAF);s3AWGRAF=null;}
-  if(n===1) calcP3();
+  if(n===1){ calcP3(); setTimeout(s6Update,50); }
   if(n===2){buildAWGGrid();startAWGCanvas();}
   if(n===3){calcEf();calcCD();calcFS();}
   if(n===4) buildS3Quiz();
