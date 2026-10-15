@@ -733,6 +733,16 @@
   .p3-watt{font-family:var(--display);font-weight:700;font-size:40px;color:var(--volt);text-shadow:0 0 22px rgba(255,230,0,.55);min-width:150px}
   .p3-device{font-size:15px;color:var(--text);flex:1;line-height:1.5}
   .p3-heat{font-size:13px;color:#ff8a52;margin-top:4px;width:100%}
+  /* Acordeón Paso 0 */
+  .acord-item{border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:.2s}
+  .acord-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:10px}
+  .acord-header:hover{background:rgba(255,255,255,.04)}
+  .acord-num{font-family:var(--display);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.05em}
+  .acord-title{font-family:var(--display);font-weight:700;font-size:15px;flex:1}
+  .acord-arrow{font-size:18px;transition:transform .25s;color:var(--muted)}
+  .acord-body{display:none;padding:0 16px 16px}
+  .acord-body.open{display:block}
+  .acord-item.open .acord-arrow{transform:rotate(180deg)}
   /* AWG */
   .awg-presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px}
   .awg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:4px}
@@ -1542,181 +1552,176 @@
       </div>
       <div class="objetivos"><div class="obj-title">🎯 Objetivos de aprendizaje</div><ul><li>Calcular la potencia eléctrica y reconocer su relación con el calor disipado.</li><li>Seleccionar el calibre de cable AWG adecuado y aplicar el factor de seguridad del 80% en el diseño eléctrico.</li></ul></div>
       <h2 class="s-title">Potencia, AWG, Eficiencia y Seguridad</h2>
-      <p class="s-sub">Esta sesión conecta la Ley de Ohm con la práctica real. Lee cada concepto antes de usar las herramientas.</p>
+      <p class="s-sub" style="margin-bottom:18px">Abre cada tema, lee la teoría y experimenta con el simulador antes de continuar.</p>
 
-      <div class="teoria-section">
-        <div class="tsec-title">1. Potencia Eléctrica</div>
-        <p class="teoria-text">La potencia indica <b>qué tan rápido</b> se consume la energía. Su unidad es el <b>Watt (W)</b>. Un bombillo de 100W consume el doble de energía por segundo que uno de 50W.</p>
-      </div>
-      <div class="tformula-row">
-        <div class="tformula-card"><div class="fml-big">P = V × I</div><div class="fml-sub">Fórmula principal</div><div class="fml-when">Con voltaje y corriente</div></div>
-        <div class="tformula-card"><div class="fml-big">P = I² × R</div><div class="fml-sub">Calor en resistencias</div><div class="fml-when">Con corriente y resistencia</div></div>
-        <div class="tformula-card"><div class="fml-big">P = V² ÷ R</div><div class="fml-sub">Desde voltaje</div><div class="fml-when">Con voltaje y resistencia</div></div>
-      </div>
-      <div class="tinfo"><b>Ejemplo impactante:</b> Una ducha eléctrica de 3500W a 110V consume I = 3500÷110 = <b>31.8 A</b>. Por eso necesita un circuito dedicado con cable grueso. Si la conectas en un circuito de 15A, el cable se recalienta y puede causar un incendio.</div>
-
-      <!-- Simulador visual de potencia — integrado en la teoría -->
-      <div style="margin-top:18px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:14px;padding:16px">
-        <h3 style="font-family:var(--display);color:var(--cyan);font-size:15px;margin:0 0 12px">🔬 Simulación visual — experimenta con P = V × I</h3>
-        <div class="mod-ctrl-row">
-          <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje (V)</span>
-          <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
-          <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
-          <span class="mod-unit">V</span>
+      <!-- ACORDEÓN 1: Potencia -->
+      <div class="acord-item open" style="border-color:rgba(0,229,255,.25)">
+        <div class="acord-header" onclick="acordToggle(this)" style="background:rgba(0,229,255,.05)">
+          <span class="acord-num" style="background:rgba(0,229,255,.15);color:var(--cyan)">01</span>
+          <span class="acord-title" style="color:var(--cyan)">⚡ Potencia Eléctrica</span>
+          <span class="acord-arrow">▾</span>
         </div>
-        <div class="mod-ctrl-row" style="margin-top:6px">
-          <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente (I)</span>
-          <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
-          <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
-          <span class="mod-unit">A</span>
-        </div>
-        <div class="mod-result-box" style="margin-top:10px">
-          <div>
-            <div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div>
-            <div class="mod-result-lbl">Potencia (W)</div>
+        <div class="acord-body open">
+          <p class="teoria-text" style="margin-top:8px">La potencia indica <b>qué tan rápido</b> se consume la energía. Su unidad es el <b>Watt (W)</b>. Un bombillo de 100W consume el doble de energía por segundo que uno de 50W.</p>
+          <div class="tformula-row">
+            <div class="tformula-card"><div class="fml-big">P = V × I</div><div class="fml-sub">Fórmula principal</div><div class="fml-when">Con voltaje y corriente</div></div>
+            <div class="tformula-card"><div class="fml-big">P = I² × R</div><div class="fml-sub">Calor en resistencias</div><div class="fml-when">Con corriente y resistencia</div></div>
+            <div class="tformula-card"><div class="fml-big">P = V² ÷ R</div><div class="fml-sub">Desde voltaje</div><div class="fml-when">Con voltaje y resistencia</div></div>
           </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div>
-            <div class="mod-result-lbl">equivalente</div>
-          </div>
-        </div>
-        <div class="mod-insight" id="s6Insight" style="margin-top:8px">Mueve los sliders para ver cómo cambia la potencia.</div>
-        <div style="margin-top:10px;display:flex;justify-content:center;width:100%;overflow:hidden">
-          <canvas id="s6Canvas" width="460" height="200" style="max-width:100%;height:auto;display:block"></canvas>
-        </div>
-      </div>
-
-      <div class="teoria-section" style="margin-top:22px">
-        <div class="tsec-title">2. Calibres de Cable AWG</div>
-        <p class="teoria-text">AWG (American Wire Gauge) es el sistema estándar para el grosor de los cables eléctricos. La regla <b>contraintuitiva</b>: número más alto = cable más delgado = más resistencia = menos capacidad de corriente.</p>
-      </div>
-      <div class="teoria-grid">
-        <div class="tcard"><div class="tcard-ic">💡</div><div class="tcard-name">AWG 14</div><div class="tcard-sym">Ø 1.63mm · Máx: 15A</div><div class="tcard-def">Iluminación domiciliaria, circuitos de 15A.</div></div>
-        <div class="tcard"><div class="tcard-ic">🔌</div><div class="tcard-name">AWG 12</div><div class="tcard-sym">Ø 2.05mm · Máx: 20A</div><div class="tcard-def">Tomacorrientes del hogar, circuitos estándar.</div></div>
-        <div class="tcard"><div class="tcard-ic">🚿</div><div class="tcard-name">AWG 10</div><div class="tcard-sym">Ø 2.59mm · Máx: 30A</div><div class="tcard-def">Duchas eléctricas, lavadoras, equipos pesados.</div></div>
-      </div>
-      <div class="twarning"><b>⚠️ Peligro de incendio:</b> Un cable con corriente mayor a su capacidad genera calor por P = I²×R. El calor derrite el aislamiento plástico y puede iniciar un incendio. Nunca uses un cable más delgado del recomendado.</div>
-
-      <!-- Simulador visual AWG -->
-      <div style="margin-top:18px;background:rgba(255,230,0,.04);border:1px solid rgba(255,230,0,.18);border-radius:14px;padding:16px">
-        <h3 style="font-family:var(--display);color:var(--volt);font-size:15px;margin:0 0 12px">🔬 Simulación visual — encuentra el calibre AWG adecuado</h3>
-        <div class="mod-ctrl-row">
-          <span class="mod-ctrl-lbl" style="color:var(--volt)">Corriente</span>
-          <input type="range" class="mod-slider" id="s9I" min="1" max="200" value="15" style="accent-color:var(--volt)" oninput="document.getElementById('s9In').value=this.value;s9Update()">
-          <input type="number" class="mod-num" id="s9In" min="1" max="400" value="15" oninput="var v=Math.max(1,parseFloat(this.value)||1);document.getElementById('s9I').value=Math.min(200,v);s9Update()">
-          <span class="mod-unit">A</span>
-        </div>
-        <div class="mod-result-box" id="s9ResultBox" style="margin-top:10px">
-          <div>
-            <div class="mod-result-val" id="s9AwgVal" style="color:var(--green)">AWG 14</div>
-            <div class="mod-result-lbl">Calibre mínimo</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--display);font-size:16px;color:var(--muted)" id="s9Dia">1.63 mm</div>
-            <div class="mod-result-lbl">diámetro</div>
+          <div class="tinfo"><b>Ejemplo:</b> Una ducha eléctrica de 3500W a 110V consume I = 3500÷110 = <b>31.8 A</b>. Por eso necesita circuito dedicado con cable grueso.</div>
+          <div style="margin-top:14px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:12px;padding:14px">
+            <p style="font-family:var(--display);color:var(--cyan);font-size:13px;margin:0 0 10px;font-weight:700">🔬 Simulador — P = V × I</p>
+            <div class="mod-ctrl-row">
+              <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje</span>
+              <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
+              <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
+              <span class="mod-unit">V</span>
+            </div>
+            <div class="mod-ctrl-row" style="margin-top:6px">
+              <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente</span>
+              <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
+              <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
+              <span class="mod-unit">A</span>
+            </div>
+            <div class="mod-result-box" style="margin-top:10px">
+              <div><div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div><div class="mod-result-lbl">Potencia (W)</div></div>
+              <div style="text-align:right"><div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div><div class="mod-result-lbl">equivalente</div></div>
+            </div>
+            <div class="mod-insight" id="s6Insight" style="margin-top:8px">Mueve los sliders para ver cómo cambia la potencia.</div>
+            <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
+              <canvas id="s6Canvas" width="460" height="200" style="max-width:100%;height:auto;display:block"></canvas>
+            </div>
           </div>
         </div>
-        <div class="mod-insight" id="s9Insight" style="margin-top:10px">Para 15 A se recomienda AWG 14 como mínimo (uso doméstico).</div>
-        <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
-          <canvas id="s9Canvas" width="460" height="100" style="max-width:100%;height:auto;display:block"></canvas>
-        </div>
-        <table class="awg-table" id="s9Table" style="margin-top:12px">
-          <thead><tr><th>AWG</th><th>Diámetro</th><th>Cap. máx (A)</th><th>Uso típico</th></tr></thead>
-          <tbody id="s9Tbody"></tbody>
-        </table>
       </div>
 
-      <div class="teoria-section" style="margin-top:22px">
-        <div class="tsec-title">3. Eficiencia Eléctrica</div>
-        <p class="teoria-text">Ningún dispositivo convierte el 100% de la energía en trabajo útil. Siempre hay pérdidas, generalmente como calor no deseado. La eficiencia mide qué tan bien se aprovecha la energía.</p>
-      </div>
-      <div class="trule">
-        <span class="trule-label">Fórmula de eficiencia</span>
-        <div class="trule-content" style="font-size:18px;text-align:center"><b>η = (P_útil ÷ P_total) × 100%</b></div>
-        <div class="trule-content" style="margin-top:10px">Bombillo incandescente: solo el <b>5%</b> es luz (95% calor) · Bombillo LED: <b>83%</b> es luz · Motor eléctrico: <b>85–95%</b> es movimiento.</div>
-      </div>
-
-      <!-- Simulador visual de eficiencia -->
-      <div style="margin-top:18px;background:rgba(35,255,157,.04);border:1px solid rgba(35,255,157,.15);border-radius:14px;padding:16px">
-        <h3 style="font-family:var(--display);color:var(--green);font-size:15px;margin:0 0 12px">🔬 Simulación visual — experimenta con η = P_útil / P_total</h3>
-        <div class="mod-ctrl-row">
-          <span class="mod-ctrl-lbl" style="color:var(--volt)">P entrada (W)</span>
-          <input type="range" class="mod-slider" id="s7Pin" min="10" max="2000" value="100" oninput="s7Sync('in',this.value);s7Update()" style="accent-color:var(--volt)">
-          <input type="number" class="mod-num" id="s7Pinn" min="1" max="10000" value="100" oninput="s7SyncN('in',this.value)">
-          <span class="mod-unit">W</span>
+      <!-- ACORDEÓN 2: AWG -->
+      <div class="acord-item" style="border-color:rgba(255,230,0,.2)">
+        <div class="acord-header" onclick="acordToggle(this)" style="background:rgba(255,230,0,.03)">
+          <span class="acord-num" style="background:rgba(255,230,0,.15);color:var(--volt)">02</span>
+          <span class="acord-title" style="color:var(--volt)">🔧 Calibres de Cable AWG</span>
+          <span class="acord-arrow">▾</span>
         </div>
-        <div class="mod-ctrl-row" style="margin-top:6px">
-          <span class="mod-ctrl-lbl" style="color:var(--green)">P útil (W)</span>
-          <input type="range" class="mod-slider" id="s7Pu" min="1" max="100" value="85" oninput="s7Sync('u',this.value);s7Update()" style="accent-color:var(--green)">
-          <input type="number" class="mod-num" id="s7Pun" min="1" max="10000" value="85" oninput="s7SyncN('u',this.value)">
-          <span class="mod-unit">W</span>
-        </div>
-        <div class="mod-result-box" style="margin-top:10px">
-          <div>
-            <div class="mod-result-val" id="s7Etaval" style="color:var(--green)">85.0%</div>
-            <div class="mod-result-lbl">Eficiencia (η)</div>
+        <div class="acord-body">
+          <p class="teoria-text" style="margin-top:8px">AWG (American Wire Gauge) es el sistema estándar para el grosor de los cables. La regla <b>contraintuitiva</b>: número más alto = cable más delgado = más resistencia = menos capacidad de corriente.</p>
+          <div class="teoria-grid">
+            <div class="tcard"><div class="tcard-ic">💡</div><div class="tcard-name">AWG 14</div><div class="tcard-sym">Ø 1.63mm · Máx: 15A</div><div class="tcard-def">Iluminación domiciliaria.</div></div>
+            <div class="tcard"><div class="tcard-ic">🔌</div><div class="tcard-name">AWG 12</div><div class="tcard-sym">Ø 2.05mm · Máx: 20A</div><div class="tcard-def">Tomacorrientes del hogar.</div></div>
+            <div class="tcard"><div class="tcard-ic">🚿</div><div class="tcard-name">AWG 10</div><div class="tcard-sym">Ø 2.59mm · Máx: 30A</div><div class="tcard-def">Duchas, lavadoras.</div></div>
           </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s7Ploss">15.0 W</div>
-            <div class="mod-result-lbl">pérdida calor</div>
+          <div class="twarning"><b>⚠️ Peligro:</b> Corriente excesiva genera calor por P = I²×R, derrite el aislamiento e inicia incendios.</div>
+          <div style="margin-top:14px;background:rgba(255,230,0,.04);border:1px solid rgba(255,230,0,.18);border-radius:12px;padding:14px">
+            <p style="font-family:var(--display);color:var(--volt);font-size:13px;margin:0 0 10px;font-weight:700">🔬 Simulador — Calibre mínimo por corriente</p>
+            <div class="mod-ctrl-row">
+              <span class="mod-ctrl-lbl" style="color:var(--volt)">Corriente</span>
+              <input type="range" class="mod-slider" id="s9I" min="1" max="200" value="15" style="accent-color:var(--volt)" oninput="document.getElementById('s9In').value=this.value;s9Update()">
+              <input type="number" class="mod-num" id="s9In" min="1" max="400" value="15" oninput="var v=Math.max(1,parseFloat(this.value)||1);document.getElementById('s9I').value=Math.min(200,v);s9Update()">
+              <span class="mod-unit">A</span>
+            </div>
+            <div class="mod-result-box" id="s9ResultBox" style="margin-top:10px">
+              <div><div class="mod-result-val" id="s9AwgVal" style="color:var(--green)">AWG 14</div><div class="mod-result-lbl">Calibre mínimo</div></div>
+              <div style="text-align:right"><div style="font-family:var(--display);font-size:16px;color:var(--muted)" id="s9Dia">1.63 mm</div><div class="mod-result-lbl">diámetro</div></div>
+            </div>
+            <div class="mod-insight" id="s9Insight" style="margin-top:10px">Para 15 A se recomienda AWG 14 como mínimo.</div>
+            <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
+              <canvas id="s9Canvas" width="460" height="100" style="max-width:100%;height:auto;display:block"></canvas>
+            </div>
+            <table class="awg-table" id="s9Table" style="margin-top:12px">
+              <thead><tr><th>AWG</th><th>Diámetro</th><th>Cap. máx (A)</th><th>Uso típico</th></tr></thead>
+              <tbody id="s9Tbody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="pct-bar-wrap" style="margin-top:8px"><div class="pct-bar-fill" id="s7Bar" style="width:85%;background:var(--green)"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px"><span>0%</span><span>50%</span><span>100%</span></div>
-        <div class="mod-insight" id="s7Insight">Un motor con 85% de eficiencia convierte 85 W de cada 100 W en trabajo útil.</div>
-        <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
-          <canvas id="s7Canvas" width="460" height="140" style="max-width:100%;height:auto;display:block"></canvas>
-        </div>
       </div>
 
-      <div class="teoria-section" style="margin-top:22px">
-        <div class="tsec-title">4. Factores de Seguridad — La regla del 80%</div>
-        <p class="teoria-text">En diseño eléctrico, nunca se carga un circuito al 100% de su capacidad. La norma NEC y el RETIE colombiano establecen que las <b>cargas continuas no deben superar el 80%</b> de la capacidad nominal del circuito.</p>
-      </div>
-      <div class="tejemplo">
-        <div class="tej-title">📝 Ejemplo de diseño</div>
-        <div class="tej-step">El taller tiene equipos que suman 14 A en total (carga continua).</div>
-        <div class="tej-step">Con factor de seguridad: 14 ÷ 0.8 = <b>17.5 A mínimos necesarios</b></div>
-        <div class="tej-step">Circuito estándar más cercano: <b>breaker 20A · cable AWG 12</b></div>
-        <div class="tej-step"><b>El 20% de margen protege de sobrecargas inesperadas y extiende la vida de la instalación.</b></div>
-      </div>
-
-      <!-- Simulador visual Regla 80% -->
-      <div style="margin-top:18px;background:rgba(255,31,107,.04);border:1px solid rgba(255,31,107,.18);border-radius:14px;padding:16px">
-        <h3 style="font-family:var(--display);color:var(--magenta);font-size:15px;margin:0 0 12px">🔬 Simulación visual — experimenta con la Regla del 80%</h3>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Selecciona el breaker (disyuntor):</p>
-        <div class="breaker-options" id="s8BreakerOpts">
-          <button class="breaker-opt active" onclick="s8SetBreaker(15,this)">15 A</button>
-          <button class="breaker-opt" onclick="s8SetBreaker(20,this)">20 A</button>
-          <button class="breaker-opt" onclick="s8SetBreaker(30,this)">30 A</button>
-          <button class="breaker-opt" onclick="s8SetBreaker(40,this)">40 A</button>
-          <button class="breaker-opt" onclick="s8SetBreaker(60,this)">60 A</button>
+      <!-- ACORDEÓN 3: Eficiencia -->
+      <div class="acord-item" style="border-color:rgba(35,255,157,.2)">
+        <div class="acord-header" onclick="acordToggle(this)" style="background:rgba(35,255,157,.03)">
+          <span class="acord-num" style="background:rgba(35,255,157,.15);color:var(--green)">03</span>
+          <span class="acord-title" style="color:var(--green)">🔋 Eficiencia Eléctrica</span>
+          <span class="acord-arrow">▾</span>
         </div>
-        <div class="mod-ctrl-row" style="margin-top:10px">
-          <span class="mod-ctrl-lbl">Carga actual</span>
-          <input type="range" class="mod-slider" id="s8Load" min="0" max="15" value="8" step="0.5" style="accent-color:var(--magenta)" oninput="document.getElementById('s8Loadn').value=parseFloat(this.value).toFixed(1);s8Update()">
-          <input type="number" class="mod-num" id="s8Loadn" min="0" max="1000" step="0.5" value="8.0" oninput="var v=Math.max(0,parseFloat(this.value)||0);document.getElementById('s8Load').value=Math.min(v,parseFloat(document.getElementById('s8Load').max));s8Update()">
-          <span class="mod-unit">A</span>
-        </div>
-        <div class="mod-result-box" id="s8ResultBox" style="margin-top:10px">
-          <div>
-            <div class="mod-result-val" id="s8MaxVal" style="color:var(--green)">12.0 A</div>
-            <div class="mod-result-lbl">Carga máxima segura</div>
+        <div class="acord-body">
+          <p class="teoria-text" style="margin-top:8px">Ningún dispositivo convierte el 100% de la energía en trabajo útil. Siempre hay pérdidas como calor. La eficiencia mide qué tan bien se aprovecha la energía.</p>
+          <div class="trule">
+            <span class="trule-label">Fórmula</span>
+            <div class="trule-content" style="font-size:18px;text-align:center"><b>η = (P_útil ÷ P_total) × 100%</b></div>
+            <div class="trule-content" style="margin-top:8px">Incandescente: <b>5%</b> luz · LED: <b>83%</b> luz · Motor: <b>85–95%</b> movimiento.</div>
           </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--display);font-size:22px" id="s8PctVal">53%</div>
-            <div class="mod-result-lbl">uso actual</div>
+          <div style="margin-top:14px;background:rgba(35,255,157,.04);border:1px solid rgba(35,255,157,.15);border-radius:12px;padding:14px">
+            <p style="font-family:var(--display);color:var(--green);font-size:13px;margin:0 0 10px;font-weight:700">🔬 Simulador — η = P_útil / P_total</p>
+            <div class="mod-ctrl-row">
+              <span class="mod-ctrl-lbl" style="color:var(--volt)">P entrada</span>
+              <input type="range" class="mod-slider" id="s7Pin" min="10" max="2000" value="100" oninput="s7Sync('in',this.value);s7Update()" style="accent-color:var(--volt)">
+              <input type="number" class="mod-num" id="s7Pinn" min="1" max="10000" value="100" oninput="s7SyncN('in',this.value)">
+              <span class="mod-unit">W</span>
+            </div>
+            <div class="mod-ctrl-row" style="margin-top:6px">
+              <span class="mod-ctrl-lbl" style="color:var(--green)">P útil</span>
+              <input type="range" class="mod-slider" id="s7Pu" min="1" max="100" value="85" oninput="s7Sync('u',this.value);s7Update()" style="accent-color:var(--green)">
+              <input type="number" class="mod-num" id="s7Pun" min="1" max="10000" value="85" oninput="s7SyncN('u',this.value)">
+              <span class="mod-unit">W</span>
+            </div>
+            <div class="mod-result-box" style="margin-top:10px">
+              <div><div class="mod-result-val" id="s7Etaval" style="color:var(--green)">85.0%</div><div class="mod-result-lbl">Eficiencia (η)</div></div>
+              <div style="text-align:right"><div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s7Ploss">15.0 W</div><div class="mod-result-lbl">pérdida calor</div></div>
+            </div>
+            <div class="pct-bar-wrap" style="margin-top:8px"><div class="pct-bar-fill" id="s7Bar" style="width:85%;background:var(--green)"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px"><span>0%</span><span>50%</span><span>100%</span></div>
+            <div class="mod-insight" id="s7Insight">Un motor con 85% de eficiencia convierte 85 W de cada 100 W en trabajo útil.</div>
+            <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
+              <canvas id="s7Canvas" width="460" height="140" style="max-width:100%;height:auto;display:block"></canvas>
+            </div>
           </div>
         </div>
-        <div class="pct-bar-wrap" style="height:28px;margin-top:8px"><div class="pct-bar-fill" id="s8Bar" style="width:53%;background:var(--green)"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:4px 0 8px"><span>0%</span><span style="color:var(--volt)">80% ⚠</span><span>100%</span></div>
-        <div class="mod-insight" id="s8Insight">Con un breaker de 15 A, la carga máxima segura es 12 A.</div>
-        <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
-          <canvas id="s8Canvas" width="460" height="160" style="max-width:100%;height:auto;display:block"></canvas>
+      </div>
+
+      <!-- ACORDEÓN 4: Regla 80% -->
+      <div class="acord-item" style="border-color:rgba(255,31,107,.2)">
+        <div class="acord-header" onclick="acordToggle(this)" style="background:rgba(255,31,107,.03)">
+          <span class="acord-num" style="background:rgba(255,31,107,.15);color:var(--magenta)">04</span>
+          <span class="acord-title" style="color:var(--magenta)">🔌 Factores de Seguridad — Regla del 80%</span>
+          <span class="acord-arrow">▾</span>
+        </div>
+        <div class="acord-body">
+          <p class="teoria-text" style="margin-top:8px">En diseño eléctrico, nunca se carga un circuito al 100%. La norma NEC y el RETIE colombiano establecen que las <b>cargas continuas no deben superar el 80%</b> de la capacidad nominal.</p>
+          <div class="tejemplo">
+            <div class="tej-title">📝 Ejemplo de diseño</div>
+            <div class="tej-step">Taller con equipos que suman 14 A (carga continua).</div>
+            <div class="tej-step">Factor de seguridad: 14 ÷ 0.8 = <b>17.5 A mínimos necesarios</b></div>
+            <div class="tej-step">Solución: <b>breaker 20A · cable AWG 12</b></div>
+          </div>
+          <div style="margin-top:14px;background:rgba(255,31,107,.04);border:1px solid rgba(255,31,107,.18);border-radius:12px;padding:14px">
+            <p style="font-family:var(--display);color:var(--magenta);font-size:13px;margin:0 0 10px;font-weight:700">🔬 Simulador — Regla del 80%</p>
+            <p style="font-size:12px;color:var(--muted);margin:0 0 8px">Selecciona el breaker:</p>
+            <div class="breaker-options" id="s8BreakerOpts">
+              <button class="breaker-opt active" onclick="s8SetBreaker(15,this)">15 A</button>
+              <button class="breaker-opt" onclick="s8SetBreaker(20,this)">20 A</button>
+              <button class="breaker-opt" onclick="s8SetBreaker(30,this)">30 A</button>
+              <button class="breaker-opt" onclick="s8SetBreaker(40,this)">40 A</button>
+              <button class="breaker-opt" onclick="s8SetBreaker(60,this)">60 A</button>
+            </div>
+            <div class="mod-ctrl-row" style="margin-top:10px">
+              <span class="mod-ctrl-lbl">Carga actual</span>
+              <input type="range" class="mod-slider" id="s8Load" min="0" max="15" value="8" step="0.5" style="accent-color:var(--magenta)" oninput="document.getElementById('s8Loadn').value=parseFloat(this.value).toFixed(1);s8Update()">
+              <input type="number" class="mod-num" id="s8Loadn" min="0" max="1000" step="0.5" value="8.0" oninput="var v=Math.max(0,parseFloat(this.value)||0);document.getElementById('s8Load').value=Math.min(v,parseFloat(document.getElementById('s8Load').max));s8Update()">
+              <span class="mod-unit">A</span>
+            </div>
+            <div class="mod-result-box" id="s8ResultBox" style="margin-top:10px">
+              <div><div class="mod-result-val" id="s8MaxVal" style="color:var(--green)">12.0 A</div><div class="mod-result-lbl">Carga máxima segura</div></div>
+              <div style="text-align:right"><div style="font-family:var(--display);font-size:22px" id="s8PctVal">53%</div><div class="mod-result-lbl">uso actual</div></div>
+            </div>
+            <div class="pct-bar-wrap" style="height:28px;margin-top:8px"><div class="pct-bar-fill" id="s8Bar" style="width:53%;background:var(--green)"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:4px 0 8px"><span>0%</span><span style="color:var(--volt)">80% ⚠</span><span>100%</span></div>
+            <div class="mod-insight" id="s8Insight">Con un breaker de 15 A, la carga máxima segura es 12 A.</div>
+            <div style="display:flex;justify-content:center;width:100%;overflow:hidden;margin-top:10px">
+              <canvas id="s8Canvas" width="460" height="160" style="max-width:100%;height:auto;display:block"></canvas>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="s1nav"><span></span><button class="btn-next" onclick="gotoS3Step(1)">Siguiente: Calculadora de potencia →</button></div>
+      <div class="s1nav" style="margin-top:18px"><span></span><button class="btn-next" onclick="gotoS3Step(1)">Siguiente: Calculadora de potencia →</button></div>
     </div>
 
     <!-- PASO 1: Potencia Eléctrica -->
@@ -3104,6 +3109,22 @@ const awgData=[
   {awg:8, dia:3.26,maxA:40,use:'Hornos / A/A central'},
   {awg:6, dia:4.11,maxA:55,use:'Tableros / acometidas'}
 ];
+
+function acordToggle(header){
+  const item=header.parentElement;
+  const body=item.querySelector('.acord-body');
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  item.classList.toggle('open',!isOpen);
+  if(!isOpen){
+    // Renderizar canvas al abrir (estaban ocultos con display:none)
+    const title=header.querySelector('.acord-title').textContent;
+    if(title.includes('Potencia')) setTimeout(s6Update,50);
+    else if(title.includes('AWG')) setTimeout(s9Update,50);
+    else if(title.includes('Eficiencia')) setTimeout(s7Update,50);
+    else if(title.includes('80%')) setTimeout(s8Update,50);
+  }
+}
 
 function gotoS3Step(n){
   s3step=n;
