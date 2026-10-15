@@ -647,6 +647,27 @@
   .exam-result .er-box.pass .er-score{color:var(--green)}
   .exam-result .er-box.fail .er-score{color:var(--magenta)}
   .exam-result .er-msg{font-size:16px;color:var(--text);margin:8px 0 18px;line-height:1.5}
+  /* ---- exam timer ---- */
+  .exam-timer{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--display);font-weight:700;font-size:22px;
+    color:var(--cyan);letter-spacing:.06em;
+    border:1px solid rgba(0,229,255,.25);border-radius:10px;
+    padding:8px 16px;background:rgba(0,229,255,.06);
+    margin-bottom:18px;width:fit-content;
+  }
+  .exam-timer .timer-icon{font-size:20px;animation:pulse 1s infinite}
+  .exam-timer.warn{color:var(--volt);border-color:rgba(255,230,0,.4);background:rgba(255,230,0,.08)}
+  .exam-timer.danger{color:var(--magenta);border-color:rgba(255,31,107,.5);background:rgba(255,31,107,.1)}
+  .exam-timer.stopped{animation:none;color:var(--muted);border-color:var(--panel-line);background:transparent}
+  /* bonus badge en resultado */
+  .er-bonus{
+    display:inline-block;margin:6px 0 14px;
+    font-family:var(--display);font-weight:700;font-size:16px;
+    color:var(--volt);background:rgba(255,230,0,.12);
+    border:1px solid rgba(255,230,0,.4);border-radius:8px;
+    padding:6px 16px;letter-spacing:.06em;
+  }
   /* certificado */
   .cert{padding:8px;margin-top:8px}
   .cert-inner{position:relative;border:2px solid var(--cyan);border-radius:18px;padding:44px 38px;text-align:center;background:radial-gradient(80% 70% at 50% 0%,rgba(0,229,255,.1),transparent 70%),linear-gradient(180deg,#070a0f,#04060a);box-shadow:0 0 50px rgba(0,229,255,.2),inset 0 0 40px rgba(0,229,255,.05);overflow:hidden}
@@ -1586,6 +1607,7 @@
     <div class="s5panel" style="display:none">
       <h2 class="s-title">Evaluación Final</h2>
       <p class="s-sub">Selecciona una respuesta por pregunta. Cuando termines, presiona "Finalizar evaluación".</p>
+      <div class="exam-timer" id="examTimer"><span class="timer-icon">⏱</span><span id="timerDisplay">0:00</span></div>
       <div class="exam" id="examBox"></div>
       <div class="exam-foot">
         <div class="exam-progress" id="examProgress">0 de 8 respondidas</div>
@@ -2795,6 +2817,39 @@ function completeSession4(){
 
 /* ==================== SESIÓN 05 — MISIÓN FINAL ==================== */
 let studentName='', examAnswers={}, examGraded=false;
+/* --- timer --- */
+let examStartTime=null, examTimerInterval=null, examElapsedSec=0;
+function startExamTimer(){
+  examStartTime=Date.now(); examElapsedSec=0;
+  const timerEl=document.getElementById('examTimer');
+  const dispEl=document.getElementById('timerDisplay');
+  if(timerEl) timerEl.className='exam-timer';
+  clearInterval(examTimerInterval);
+  examTimerInterval=setInterval(()=>{
+    examElapsedSec=Math.floor((Date.now()-examStartTime)/1000);
+    const m=Math.floor(examElapsedSec/60), s=examElapsedSec%60;
+    if(dispEl) dispEl.textContent=m+':'+(s<10?'0':'')+s;
+    // color del timer según tiempo
+    if(timerEl){
+      if(examElapsedSec>=300) timerEl.className='exam-timer danger';       // >5 min rojo
+      else if(examElapsedSec>=180) timerEl.className='exam-timer warn';    // >3 min amarillo
+      else timerEl.className='exam-timer';
+    }
+  },1000);
+}
+function stopExamTimer(){
+  clearInterval(examTimerInterval);
+  const timerEl=document.getElementById('examTimer');
+  if(timerEl) timerEl.className='exam-timer stopped';
+}
+function calcBonus(sec,correct){
+  // solo aplica si pasó (>=6 correctas)
+  if(correct<6) return 0;
+  if(sec<=120)  return 30;   // ≤ 2 min → +30 puntos
+  if(sec<=180)  return 20;   // ≤ 3 min → +20 puntos
+  if(sec<=300)  return 10;   // ≤ 5 min → +10 puntos
+  return 5;                  // > 5 min → +5 puntos (por terminar)
+}
 const examData=[
   {q:'¿Cuál es la unidad de la resistencia eléctrica?', opts:['Voltio (V)','Amperio (A)','Ohmio (Ω)','Watt (W)'], a:2},
   {q:'¿Qué magnitud representa el "empuje" que mueve a los electrones?', opts:['La corriente','El voltaje','La resistencia','La potencia'], a:1},
@@ -2811,7 +2866,7 @@ function gotoS5Step(n){
   document.querySelectorAll('#s5 .steps .dot').forEach((d,i)=>d.classList.toggle('on',i<=n));
   document.getElementById('s5label').textContent='Misión Final · Paso '+(n+1)+' de 3';
   document.getElementById('s5').scrollTop=0;
-  if(n===1) buildExam();
+  if(n===1){ buildExam(); startExamTimer(); }
 }
 function checkName(){
   studentName=document.getElementById('studentName').value.trim();
@@ -2842,6 +2897,8 @@ function pickExam(qi,oi,qEl){
 }
 function gradeExam(){
   examGraded=true;
+  stopExamTimer();
+  const sec=examElapsedSec;
   let correct=0;
   document.querySelectorAll('#examBox .q').forEach((qEl,qi)=>{
     const picked=examAnswers[qi], ans=examData[qi].a;
@@ -2853,12 +2910,27 @@ function gradeExam(){
     });
   });
   const total=examData.length, pct=Math.round(correct/total*100), pass=correct>=6;
+  const bonus=calcBonus(sec,correct);
+  const m=Math.floor(sec/60), s=sec%60;
+  const timeStr=m+':'+(s<10?'0':'')+s;
+  let bonusHtml='';
+  if(pass && bonus>0){
+    let bonusTxt='';
+    if(bonus===30) bonusTxt='⚡ ¡Velocidad máxima! Completaste en menos de 2 minutos.';
+    else if(bonus===20) bonusTxt='🚀 ¡Muy rápido! Completaste en menos de 3 minutos.';
+    else if(bonus===10) bonusTxt='💡 ¡Buen ritmo! Completaste en menos de 5 minutos.';
+    else bonusTxt='✅ ¡Misión completada!';
+    bonusHtml=`<div class="er-bonus">+${bonus} puntos bonus · Tiempo: ${timeStr}</div><p style="color:var(--muted);font-size:13px;margin:-8px 0 14px">${bonusTxt}</p>`;
+  } else if(!pass){
+    bonusHtml=`<p style="color:var(--muted);font-size:13px;margin:0 0 14px">⏱ Tiempo: ${timeStr}</p>`;
+  }
   const res=document.getElementById('examResult');
   res.className='exam-result show';
   res.innerHTML=`<div class="er-box ${pass?'pass':'fail'}">
     <div class="er-score">${correct}/${total} · ${pct}%</div>
+    ${bonusHtml}
     <div class="er-msg">${pass?'¡Excelente, Agente! Has superado la evaluación final y te has ganado tu certificación.':'Aún no alcanzas el mínimo de 6 aciertos. Repasa las sesiones y vuelve a intentarlo: ¡tú puedes!'}</div>
-    ${pass?'<button class="btn-next" style="margin:0 auto" onclick="showCertificate('+correct+','+pct+')">🏆 Ver mi certificado →</button>'
+    ${pass?'<button class="btn-next" style="margin:0 auto" onclick="showCertificate('+correct+','+pct+','+bonus+',\''+timeStr+'\')">🏆 Ver mi certificado →</button>'
           :'<button class="btn-next" style="margin:0 auto" onclick="retryExam()">🔄 Reintentar evaluación</button>'}
   </div>`;
   res.scrollIntoView({behavior:'smooth',block:'center'});
@@ -2867,6 +2939,7 @@ function retryExam(){
   examGraded=false; examAnswers={};
   const box=document.getElementById('examBox'); box.dataset.built='';
   buildExam();
+  startExamTimer();
   document.getElementById('examResult').className='exam-result';
   document.getElementById('examProgress').textContent='0 de '+examData.length+' respondidas';
   document.getElementById('finishExamBtn').disabled=true;
@@ -2874,7 +2947,7 @@ function retryExam(){
 }
 /* ==================== LEADERBOARD ==================== */
 const LB_KEY='ohmvengers_leaderboard';
-function saveToLeaderboard(name,grado,correct,pct){
+function saveToLeaderboard(name,grado,correct,pct,bonus,timeStr){
   try{
     let entries=JSON.parse(localStorage.getItem(LB_KEY)||'[]');
     entries.push({
@@ -2882,13 +2955,15 @@ function saveToLeaderboard(name,grado,correct,pct){
       grado:grado||'—',
       correct:correct,
       pct:pct,
+      bonus:bonus||0,
+      time:timeStr||'—',
       date:new Date().toLocaleDateString('es-CO',{year:'numeric',month:'short',day:'numeric'})
     });
     // keep only the best score per name+grado combo
     const map={};
     entries.forEach(e=>{
       const k=(e.name+'|'+e.grado).toLowerCase();
-      if(!map[k]||e.pct>map[k].pct) map[k]=e;
+      if(!map[k]||e.pct>map[k].pct||(e.pct===map[k].pct&&(e.bonus||0)>(map[k].bonus||0))) map[k]=e;
     });
     entries=Object.values(map);
     // sort desc by pct then by name
@@ -2919,12 +2994,13 @@ function renderLeaderboard(){
         <span class="lb-pct-bar"><span class="${fillCls}" style="width:${e.pct}%"></span></span>
         ${e.pct}%
       </td>
+      <td><span class="lb-date">${e.time||'—'}</span>${e.bonus>0?`<br><span style="color:var(--volt);font-size:12px;font-family:var(--display)">+${e.bonus}</span>`:''}</td>
       <td><span class="lb-date">${e.date}</span></td>
     </tr>`;
   }).join('');
   body.innerHTML=`<table class="lb-table">
     <thead><tr>
-      <th>#</th><th>Agente</th><th>Puntos</th><th>%</th><th>Fecha</th>
+      <th>#</th><th>Agente</th><th>Pts</th><th>%</th><th>⏱ Tiempo</th><th>Fecha</th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
@@ -2940,7 +3016,7 @@ function clearLeaderboard(){
 }
 /* ==================== /LEADERBOARD ==================== */
 
-function showCertificate(correct,pct){
+function showCertificate(correct,pct,bonus,timeStr){
   document.getElementById('certName').textContent=studentName.toUpperCase();
   const info=document.getElementById('certStudentInfo');
   if(info && (studentData.grado||studentData.inst)){
@@ -2950,8 +3026,8 @@ function showCertificate(correct,pct){
   document.getElementById('certScore').textContent=correct+'/8 ('+pct+'%)';
   const d=new Date();
   document.getElementById('certDate').textContent=d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
-  // Guardar en la tabla de clasificación
-  saveToLeaderboard(studentName, studentData.grado, correct, pct);
+  // Guardar en la tabla de clasificación (con bonus y tiempo)
+  saveToLeaderboard(studentName, studentData.grado, correct, pct, bonus||0, timeStr||'—');
   completed=Math.max(completed,5); saveProgress();
   gotoS5Step(2);
 }
