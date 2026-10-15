@@ -3468,14 +3468,60 @@ function showCertificate(correct,pct,bonus,timeStr){
     const parts=[]; if(studentData.grado)parts.push('Grado '+studentData.grado); if(studentData.inst)parts.push(studentData.inst);
     info.textContent=parts.join(' · ');
   }
-  document.getElementById('certScore').textContent=correct+'/8 ('+pct+'%)';
+  document.getElementById('certScore').textContent=correct+'/'+examData.length+' ('+pct+'%)';
   const d=new Date();
   document.getElementById('certDate').textContent=d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
-  // Guardar en la tabla de clasificación (con bonus y tiempo)
   saveToLeaderboard(studentName, studentData.grado, correct, pct, bonus||0, timeStr||'—');
   completed=Math.max(completed,5); saveProgress();
   gotoS5Step(2);
+  setTimeout(launchConfetti, 400);
 }
+
+/* ==================== CONFETI ==================== */
+function launchConfetti(){
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+
+  const COLORS=['#00e5ff','#ffe600','#ff1f6b','#23ff9d','#ffffff','#a78bfa'];
+  const pieces=Array.from({length:140},()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*-canvas.height*0.5 - 20,
+    w: 7+Math.random()*9,
+    h: 4+Math.random()*5,
+    color: COLORS[Math.floor(Math.random()*COLORS.length)],
+    rot: Math.random()*Math.PI*2,
+    rotSpeed: (Math.random()-.5)*.18,
+    vx: (Math.random()-.5)*3,
+    vy: 2.5+Math.random()*3.5,
+    opacity: 1,
+  }));
+
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotSpeed;
+      if(frame>90) p.opacity=Math.max(0,p.opacity-.012);
+      if(p.y<canvas.height+20) alive=true;
+      ctx.save();
+      ctx.globalAlpha=p.opacity;
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(alive && frame<220) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+  draw();
+}
+/* ==================== /CONFETI ==================== */
 function finishMission(){
   completed=Math.max(completed,5); saveProgress();
   goHub(); renderHub();
