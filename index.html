@@ -5190,7 +5190,7 @@ function s6Update(){
   else if(P<100) ins.textContent='⚡ Zona de electrodomésticos pequeños ('+P.toFixed(0)+' W).';
   else if(P<500) ins.textContent='⚠️ Consumo moderado ('+P.toFixed(0)+' W) — como un ventilador o TV.';
   else if(P<2000) ins.textContent='🔥 Consumo alto ('+P.toFixed(0)+' W) — plancha o microondas.';
-  else ins.textContent='⚡⚡ Consumo industrial ('+P>=1000?(P/1000).toFixed(1)+' kW'+') — ducha eléctrica o horno.');
+  else ins.textContent='⚡⚡ Consumo industrial ('+(P>=1000?(P/1000).toFixed(1)+' kW':P.toFixed(0)+' W')+') — ducha eléctrica o horno.';
   s6Draw(V,I,P);
 }
 function s6Draw(V,I,P){
