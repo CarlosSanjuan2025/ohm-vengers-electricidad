@@ -321,6 +321,10 @@
   .vir-formula-lbl{font-size:12px;color:var(--muted);margin-top:4px}
   .vir-canvas-wrap{text-align:center;margin-bottom:8px}
   .vir-canvas{border-radius:10px;background:#080c14;width:100%;max-width:460px}
+  .vir-inp-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .vir-num{width:72px;background:#0d1520;border:1px solid rgba(0,229,255,.25);color:var(--text);font-family:var(--display);font-size:15px;border-radius:8px;padding:5px 8px;text-align:center}
+  .vir-num:focus{outline:none;border-color:var(--cyan)}
+  .vir-num-unit{font-size:12px;color:var(--muted)}
   .vir-locked{font-size:11px;color:var(--muted);margin-top:6px;text-align:center}
   .vir-solve-btn{display:inline-block;background:none;border:1px solid rgba(0,229,255,.35);color:var(--cyan);font-family:var(--display);font-size:12px;letter-spacing:.06em;border-radius:8px;padding:6px 16px;cursor:pointer;margin-top:8px;transition:.2s}
   .vir-solve-btn:hover{background:rgba(0,229,255,.1)}
@@ -1990,19 +1994,31 @@
         <div class="vir-card" id="cardV">
           <div class="vir-label">VOLTAJE</div>
           <div><span class="vir-val volt-c" id="virVval">12</span><span class="vir-unit"> V</span></div>
-          <input type="range" class="vir-slider" id="virVslider" min="1" max="24" value="12" oninput="virUpdate()">
+          <div class="vir-inp-row">
+            <input type="range" class="vir-slider" id="virVslider" min="1" max="24" value="12" oninput="virSyncNum('V',this.value);virUpdate()" style="flex:1">
+            <input type="number" class="vir-num" id="virVnum" min="1" max="24" value="12" oninput="virSyncSlider('V',this.value);virUpdate()">
+            <span class="vir-num-unit">V</span>
+          </div>
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>1 V</span><span>24 V</span></div>
         </div>
         <div class="vir-card" id="cardI">
           <div class="vir-label">CORRIENTE</div>
           <div><span class="vir-val cur-c" id="virIval">0.12</span><span class="vir-unit"> A</span></div>
-          <input type="range" class="vir-slider" id="virIslider" min="1" max="100" value="12" oninput="virUpdate()" style="accent-color:var(--green)">
+          <div class="vir-inp-row">
+            <input type="range" class="vir-slider" id="virIslider" min="1" max="100" value="12" oninput="virSyncNum('I',this.value);virUpdate()" style="flex:1;accent-color:var(--green)">
+            <input type="number" class="vir-num" id="virInum" min="0.01" max="1" step="0.01" value="0.12" oninput="virSyncSlider('I',this.value);virUpdate()">
+            <span class="vir-num-unit">A</span>
+          </div>
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>0.01 A</span><span>1 A</span></div>
         </div>
         <div class="vir-card" id="cardR">
           <div class="vir-label">RESISTENCIA</div>
           <div><span class="vir-val res-c" id="virRval">100</span><span class="vir-unit"> Ω</span></div>
-          <input type="range" class="vir-slider" id="virRslider" min="1" max="100" value="50" oninput="virUpdate()" style="accent-color:var(--magenta)">
+          <div class="vir-inp-row">
+            <input type="range" class="vir-slider" id="virRslider" min="1" max="100" value="10" oninput="virSyncNum('R',this.value);virUpdate()" style="flex:1;accent-color:var(--magenta)">
+            <input type="number" class="vir-num" id="virRnum" min="1" max="100000" value="100" oninput="virSyncSlider('R',this.value);virUpdate()">
+            <span class="vir-num-unit">Ω</span>
+          </div>
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>10 Ω</span><span>1 kΩ</span></div>
         </div>
         <div class="vir-card">
@@ -2096,8 +2112,8 @@
         </div>
         <div class="circ-vsrc">
           <div style="font-family:var(--display);font-size:11px;color:var(--muted);letter-spacing:.08em;min-width:80px">FUENTE (V)</div>
-          <input type="range" class="vir-slider" id="circVslider" min="1" max="24" value="12" oninput="circUpdate()" style="flex:1">
-          <span class="vir-val volt-c" id="circVval" style="font-size:22px;min-width:50px">12</span>
+          <input type="range" class="vir-slider" id="circVslider" min="1" max="24" value="12" oninput="document.getElementById('circVnum').value=this.value;circUpdate()" style="flex:1">
+          <input type="number" class="vir-num" id="circVnum" min="1" max="220" value="12" oninput="var v=Math.min(24,Math.max(1,parseFloat(this.value)||1));document.getElementById('circVslider').value=Math.min(24,v);circUpdate()">
           <span style="font-size:13px;color:var(--muted)">V</span>
         </div>
         <div id="circRrows"></div>
@@ -4260,6 +4276,33 @@ function labInit(){
   colUpdate();
   circInit();
 }
+
+/* sincronización slider ↔ número para módulo VIR */
+function virSyncNum(v, sliderVal){
+  // slider → actualiza el input numérico con el valor real
+  if(v==='V'){ document.getElementById('virVnum').value=parseInt(sliderVal); }
+  if(v==='I'){ document.getElementById('virInum').value=(parseInt(sliderVal)/100).toFixed(2); }
+  if(v==='R'){ document.getElementById('virRnum').value=parseInt(sliderVal)*10; }
+}
+function virSyncSlider(v, numVal){
+  // número → actualiza el slider con valor mapeado
+  const n=parseFloat(numVal)||0;
+  if(v==='V'){
+    const clamped=Math.min(24,Math.max(1,Math.round(n)));
+    document.getElementById('virVnum').value=clamped;
+    document.getElementById('virVslider').value=clamped;
+  }
+  if(v==='I'){
+    const clamped=Math.min(1,Math.max(0.01,n));
+    document.getElementById('virInum').value=clamped;
+    document.getElementById('virIslider').value=Math.round(clamped*100);
+  }
+  if(v==='R'){
+    const clamped=Math.min(100000,Math.max(1,Math.round(n)));
+    document.getElementById('virRnum').value=clamped;
+    document.getElementById('virRslider').value=Math.min(100,Math.round(clamped/10));
+  }
+}
 function labTab(id, btn){
   document.querySelectorAll('.lab-tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.lab-panel').forEach(p=>p.classList.remove('active'));
@@ -4281,8 +4324,11 @@ function virSetSolve(v){
     // deshabilitar slider de la variable calculada
     const sl=document.getElementById('virVslider'+(x==='V'?'':'').replace('V',x==='V'?'V':x));
     const slMap={V:'virVslider',I:'virIslider',R:'virRslider'};
+    const numMap={V:'virVnum',I:'virInum',R:'virRnum'};
     const s=document.getElementById(slMap[x]);
+    const n=document.getElementById(numMap[x]);
     if(s) s.disabled=active;
+    if(n){ n.disabled=active; n.style.opacity=active?'0.4':'1'; }
     card.style.opacity=active?'0.6':'1';
   });
   const eqMap={
@@ -4297,13 +4343,11 @@ function virSetSolve(v){
 }
 
 function virUpdate(){
-  const Vsl=document.getElementById('virVslider');
-  const Isl=document.getElementById('virIslider');
-  const Rsl=document.getElementById('virRslider');
-  // sliders: V→1-24, I→1-100 (÷100 = 0.01-1A), R→1-100 (×10 = 10-1000Ω)
-  let V=parseFloat(Vsl.value);
-  let I=parseFloat(Isl.value)/100;
-  let R=parseFloat(Rsl.value)*10;
+  // Lee siempre del input numérico (fuente de verdad)
+  let V=parseFloat(document.getElementById('virVnum')?.value||document.getElementById('virVslider').value)||12;
+  let I=parseFloat(document.getElementById('virInum')?.value||(document.getElementById('virIslider').value/100))||0.12;
+  let R=parseFloat(document.getElementById('virRnum')?.value||(document.getElementById('virRslider').value*10))||100;
+  V=Math.max(0.001,V); I=Math.max(0.0001,I); R=Math.max(0.001,R);
 
   if(virSolve==='V')      V=parseFloat((I*R).toFixed(3));
   else if(virSolve==='I'){ I=R===0?0:parseFloat((V/R).toFixed(4)); }
@@ -4315,7 +4359,10 @@ function virUpdate(){
   document.getElementById('virIval').textContent=I.toFixed(3);
   document.getElementById('virRval').textContent=R>=1000?(R/1000).toFixed(2)+'k':R;
   document.getElementById('virPval').textContent=P>=1?P.toFixed(2):(P*1000).toFixed(1);
-  document.querySelector('#cardP .vir-unit')||null;
+  // actualizar input numérico de la variable calculada
+  if(virSolve==='V' && document.getElementById('virVnum')) document.getElementById('virVnum').value=V;
+  if(virSolve==='I' && document.getElementById('virInum')) document.getElementById('virInum').value=I.toFixed(4);
+  if(virSolve==='R' && document.getElementById('virRnum')) document.getElementById('virRnum').value=R.toFixed(2);
   // potencia unidad
   const pu=document.querySelector('#virPval')?.nextElementSibling;
   if(pu) pu.textContent=P>=1?' W':' mW';
@@ -4518,8 +4565,8 @@ function circRenderRows(){
 }
 
 function circUpdate(){
-  const V=parseInt(document.getElementById('circVslider').value);
-  document.getElementById('circVval').textContent=V;
+  const V=Math.max(1,parseFloat(document.getElementById('circVnum').value)||12);
+  document.getElementById('circVval')||null; // span ya no se usa como display
 
   let Req, currents=[], voltages=[];
   if(circMode==='serie'){
