@@ -3062,9 +3062,25 @@ function retryExam(){
 const DQ_TOTAL=60, DQ_QS=5;
 let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false;
 
+// Banco exclusivo del Desafío — distinto al examen final
+const dqBank=[
+  {q:'¿Cuál es el símbolo de la resistencia eléctrica?', opts:['R','V','I','P'], a:0},
+  {q:'¿Qué instrumento mide el voltaje en un circuito?', opts:['Amperímetro','Vatímetro','Voltímetro','Ohmímetro'], a:2},
+  {q:'Si R = 10 Ω e I = 2 A, ¿cuánto es el voltaje?', opts:['5 V','12 V','20 V','8 V'], a:2},
+  {q:'¿Qué le pasa a la corriente si la resistencia aumenta y el voltaje es constante?', opts:['Aumenta','Disminuye','Se mantiene igual','Se vuelve cero'], a:1},
+  {q:'La potencia eléctrica se mide en…', opts:['Voltios','Amperios','Ohmios','Watts'], a:3},
+  {q:'En un circuito en paralelo, ¿qué es igual en todas las ramas?', opts:['La corriente','La resistencia','El voltaje','La potencia'], a:2},
+  {q:'¿Cuál es la fórmula correcta de la Ley de Ohm?', opts:['V = I + R','V = I × R','V = I ÷ R','V = I² × R'], a:1},
+  {q:'¿Cómo se llama la oposición que un material ofrece al paso de la corriente?', opts:['Voltaje','Potencia','Resistencia','Energía'], a:2},
+  {q:'Un bombillo de 60 W a 120 V, ¿qué corriente consume?', opts:['0.5 A','2 A','60 A','720 A'], a:0},
+  {q:'¿Qué ocurre en un cortocircuito?', opts:['La resistencia aumenta','El voltaje baja a cero','La corriente sube peligrosamente','La potencia disminuye'], a:2},
+  {q:'¿Cuántos Watts consume un dispositivo de 5 A a 220 V?', opts:['44 W','225 W','1100 W','215 W'], a:2},
+  {q:'¿Qué tipo de circuito tiene una sola trayectoria para la corriente?', opts:['Paralelo','Serie','Mixto','Abierto'], a:1},
+];
+
 function dqStart(){
   dqActive=true; dqIdx=0; dqScore=0;
-  dqPool=shuffle(examData.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
+  dqPool=shuffle(dqBank.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
   dqPool=dqPool.slice(0,DQ_QS);
   dqPool.forEach(item=>{
     const indexed=item.opts.map((o,i)=>({o,correct:i===item._origA}));
