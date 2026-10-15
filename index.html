@@ -1560,6 +1560,37 @@
       </div>
       <div class="tinfo"><b>Ejemplo impactante:</b> Una ducha eléctrica de 3500W a 110V consume I = 3500÷110 = <b>31.8 A</b>. Por eso necesita un circuito dedicado con cable grueso. Si la conectas en un circuito de 15A, el cable se recalienta y puede causar un incendio.</div>
 
+      <!-- Simulador visual de potencia — integrado en la teoría -->
+      <div style="margin-top:18px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:14px;padding:16px">
+        <h3 style="font-family:var(--display);color:var(--cyan);font-size:15px;margin:0 0 12px">🔬 Simulación visual — experimenta con P = V × I</h3>
+        <div class="mod-ctrl-row">
+          <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje (V)</span>
+          <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
+          <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
+          <span class="mod-unit">V</span>
+        </div>
+        <div class="mod-ctrl-row" style="margin-top:6px">
+          <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente (I)</span>
+          <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
+          <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
+          <span class="mod-unit">A</span>
+        </div>
+        <div class="mod-result-box" style="margin-top:10px">
+          <div>
+            <div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div>
+            <div class="mod-result-lbl">Potencia (W)</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div>
+            <div class="mod-result-lbl">equivalente</div>
+          </div>
+        </div>
+        <div class="mod-insight" id="s6Insight" style="margin-top:8px">Mueve los sliders para ver cómo cambia la potencia.</div>
+        <div class="mod-canvas-wrap" style="margin-top:10px">
+          <canvas class="mod-canvas" id="s6Canvas" width="460" height="180"></canvas>
+        </div>
+      </div>
+
       <div class="teoria-section" style="margin-top:22px">
         <div class="tsec-title">2. Calibres de Cable AWG</div>
         <p class="teoria-text">AWG (American Wire Gauge) es el sistema estándar para el grosor de los cables eléctricos. La regla <b>contraintuitiva</b>: número más alto = cable más delgado = más resistencia = menos capacidad de corriente.</p>
@@ -1637,42 +1668,6 @@
           <div class="p3-watt" id="p3Watt">220 W</div>
           <div class="p3-device" id="p3Device"></div>
           <div class="p3-heat" id="p3Heat"></div>
-        </div>
-      </div>
-      <!-- Simulador visual de potencia -->
-      <div style="margin-top:18px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);border-radius:14px;padding:16px">
-        <h3 style="font-family:var(--display);color:var(--cyan);font-size:15px;margin:0 0 12px">🔬 Simulación visual</h3>
-        <div class="mod-ctrl-row">
-          <span class="mod-ctrl-lbl" style="color:var(--cyan)">Voltaje (V)</span>
-          <input type="range" class="mod-slider" id="s6V" min="1" max="220" value="120" oninput="s6Sync('V',this.value);s6Update()" style="accent-color:var(--cyan)">
-          <input type="number" class="mod-num" id="s6Vn" min="1" max="220" value="120" oninput="s6SyncN('V',this.value)">
-          <span class="mod-unit">V</span>
-        </div>
-        <div class="mod-ctrl-row" style="margin-top:6px">
-          <span class="mod-ctrl-lbl" style="color:var(--green)">Corriente (I)</span>
-          <input type="range" class="mod-slider" id="s6I" min="1" max="200" value="10" oninput="s6Sync('I',this.value);s6Update()" style="accent-color:var(--green)">
-          <input type="number" class="mod-num" id="s6In" min="0.01" max="20" step="0.01" value="0.10" oninput="s6SyncN('I',this.value)">
-          <span class="mod-unit">A</span>
-        </div>
-        <div class="mod-result-box" style="margin-top:10px">
-          <div>
-            <div class="mod-result-val" id="s6Pval" style="color:var(--volt)">12.0</div>
-            <div class="mod-result-lbl">Potencia (W)</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--display);font-size:18px;color:var(--magenta)" id="s6Palt">12000 mW</div>
-            <div class="mod-result-lbl">equivalente</div>
-          </div>
-        </div>
-        <div class="mod-insight" id="s6Insight" style="margin-top:8px">Mueve los sliders para ver cómo cambia la potencia.</div>
-        <div class="mod-canvas-wrap" style="margin-top:10px">
-          <canvas class="mod-canvas" id="s6Canvas" width="460" height="180"></canvas>
-        </div>
-        <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;line-height:1.7">
-          <b style="color:var(--cyan)">Ejemplos cotidianos:</b><br>
-          💡 Bombillo LED: <b>10 W</b> · Bombillo incandescente: <b>60 W</b><br>
-          📱 Cargador celular: <b>5–20 W</b> · Ventilador: <b>40–80 W</b><br>
-          🌡️ Plancha ropa: <b>1000–2400 W</b> · Ducha eléctrica: <b>4000–6000 W</b>
         </div>
       </div>
       <div class="s1nav" style="margin-top:16px"><span></span><button class="btn-next" id="s3p1next" disabled onclick="gotoS3Step(2)">Siguiente: Calibres AWG →</button></div>
@@ -3177,7 +3172,8 @@ function gotoS3Step(n){
   document.getElementById('s3label').textContent='Sesión 03 · Paso '+(n+1)+' de 5';
   document.getElementById('s3').scrollTop=0;
   if(s3AWGRAF){cancelAnimationFrame(s3AWGRAF);s3AWGRAF=null;}
-  if(n===1){ calcP3(); setTimeout(s6Update,50); }
+  if(n===0) setTimeout(s6Update,50);
+  if(n===1) calcP3();
   if(n===2){buildAWGGrid();startAWGCanvas();}
   if(n===3){calcEf();calcCD();calcFS();}
   if(n===4) buildS3Quiz();
