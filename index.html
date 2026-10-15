@@ -2120,7 +2120,7 @@
         <button class="circ-add-btn" onclick="circAddR()" id="circAddBtn">+ Añadir resistencia</button>
       </div>
       <div class="circ-results" id="circResults"></div>
-      <canvas class="circ-canvas" id="circCanvas" width="480" height="200"></canvas>
+      <canvas class="circ-canvas" id="labCircCanvas" width="480" height="200"></canvas>
     </div>
   </div>
 </section>
@@ -4612,7 +4612,7 @@ function circUpdate(){
 }
 
 function circDraw(V, Req, Itotal, voltages, currents){
-  const cv=document.getElementById('circCanvas');
+  const cv=document.getElementById('labCircCanvas');
   if(!cv) return;
   const ctx=cv.getContext('2d');
   const W=cv.width, H=cv.height;
