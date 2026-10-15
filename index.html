@@ -3183,7 +3183,7 @@ function retryExam(){
 }
 /* ==================== DESAFÍO RÁPIDO ==================== */
 const DQ_TOTAL=90, DQ_QS=10;
-let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false, dqStreak=0;
+let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false, dqStreak=0, dqWrong=[], dqReviewMode=false;
 
 // Banco exclusivo del Desafío (50 preguntas) — Sesiones 01 y 02
 const dqBank=[
@@ -3241,7 +3241,7 @@ const dqBank=[
 ];
 
 function dqStart(){
-  dqActive=true; dqIdx=0; dqScore=0; dqStreak=0;
+  dqActive=true; dqIdx=0; dqScore=0; dqStreak=0; dqWrong=[]; dqReviewMode=false;
   dqPool=shuffle(dqBank.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
   dqPool=dqPool.slice(0,DQ_QS);
   dqPool.forEach(item=>{
@@ -3326,6 +3326,7 @@ function dqPick(oi){
       if(dqStreak>=3) setTimeout(()=>playTone('sine',1047,.18,.12),180); // nota extra en racha
     } else {
       dqStreak=0;
+      dqWrong.push(item);
       fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a];
       sfxWrong();
     }
@@ -3381,6 +3382,98 @@ function dqFinish(){
       ${dqStreak>=3?`<div style="font-family:var(--display);font-size:14px;color:var(--volt);margin-bottom:8px">🔥 Mejor racha: ${dqStreak} seguidas</div>`:''}
       <div class="dq-result-msg">${msg}</div>
       <div class="dq-actions">
+        ${dqWrong.length>0&&!dqReviewMode?`<button class="btn-next" style="background:linear-gradient(135deg,rgba(255,230,0,.18),rgba(255,230,0,.06));border-color:var(--volt);color:var(--volt)" onclick="dqReview()">🔁 Repasar ${dqWrong.length} fallada${dqWrong.length===1?'':'s'}</button>`:''}
+        <button class="btn-next" onclick="dqStart()">🔄 Nuevo desafío</button>
+        <button class="back" onclick="show('hub');dqStop()">← Ir al hub</button>
+      </div>
+    </div>`;
+}
+function dqReview(){
+  // Modo repaso: sin timer, solo preguntas falladas con opciones barajadas
+  dqReviewMode=true; dqActive=true; dqIdx=0; dqScore=0; dqStreak=0;
+  dqPool=dqWrong.map(item=>{
+    const fresh={...item, opts:[...item.opts], _origA:item.a};
+    // re-barajar opciones
+    const indexed=fresh.opts.map((o,i)=>({o,correct:i===fresh._origA}));
+    shuffle(indexed);
+    fresh.opts=indexed.map(x=>x.o);
+    fresh.a=indexed.findIndex(x=>x.correct);
+    return fresh;
+  });
+  dqWrong=[];
+  clearInterval(dqTimer); dqTimer=null; dqSec=0;
+  const content=document.getElementById('dqContent');
+  // Cabecera modo repaso
+  content.innerHTML=`
+    <div class="dq-header">
+      <div class="dq-title" style="color:var(--volt)">🔁 MODO REPASO</div>
+      <div class="dq-prog-txt">Pregunta 1 de ${dqPool.length} · Sin límite de tiempo</div>
+    </div>
+    <div id="dqQuestionArea"></div>`;
+  dqRenderReview();
+}
+function dqRenderReview(){
+  if(dqIdx>=dqPool.length){ dqFinishReview(); return; }
+  const item=dqPool[dqIdx];
+  const area=document.getElementById('dqQuestionArea');
+  if(!area) return;
+  // Actualizar cabecera
+  const prog=document.querySelector('#dqContent .dq-prog-txt');
+  if(prog) prog.textContent=`Pregunta ${dqIdx+1} de ${dqPool.length} · Correctas: ${dqScore}`;
+  area.innerHTML=`
+    <div class="dq-question">
+      <div class="dq-qt"><b>${dqIdx+1}.</b>${item.q}</div>
+      ${item.opts.map((o,i)=>`<button class="dq-opt" id="dqOpt${i}" onclick="dqPickReview(${i})">${o}</button>`).join('')}
+      <div class="dq-fb" id="dqFb"></div>
+      ${item.h?`<button class="dq-hint-btn" id="dqHintBtn" onclick="dqUseHintReview()">💡 Pista</button>
+      <div class="dq-hint-txt" id="dqHintTxt">${item.h}</div>`:''}
+    </div>`;
+}
+function dqPickReview(oi){
+  if(!dqActive) return;
+  const item=dqPool[dqIdx];
+  const correct=oi===item.a;
+  item.opts.forEach((_,i)=>{
+    const b=document.getElementById('dqOpt'+i);
+    if(b){ b.disabled=true; if(i===item.a) b.classList.add('right'); else if(i===oi) b.classList.add('wrong'); }
+  });
+  const fb=document.getElementById('dqFb');
+  if(fb){
+    if(correct){
+      dqScore++;
+      fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!';
+      sfxCorrect();
+    } else {
+      dqWrong.push(item);
+      fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a];
+      sfxWrong();
+    }
+  }
+  dqIdx++;
+  setTimeout(()=>{ if(dqActive) dqRenderReview(); },900);
+}
+function dqUseHintReview(){
+  const btn=document.getElementById('dqHintBtn');
+  const txt=document.getElementById('dqHintTxt');
+  if(!btn||!txt) return;
+  btn.disabled=true; btn.textContent='💡 Pista usada';
+  txt.style.display='block';
+  playTone('triangle',330,.12,.1);
+}
+function dqFinishReview(){
+  dqActive=false;
+  const total=dqPool.length;
+  const pct=Math.round(dqScore/total*100);
+  const content=document.getElementById('dqContent');
+  content.innerHTML=`
+    <div class="dq-result${dqScore===total?'':' fail'}">
+      <div style="font-size:48px;margin-bottom:6px">${dqScore===total?'🏆':'💡'}</div>
+      <div style="font-family:var(--display);font-size:13px;color:var(--volt);letter-spacing:.08em;margin-bottom:6px">MODO REPASO</div>
+      <div class="dq-result-score">${dqScore}/${total}</div>
+      <div style="font-family:var(--display);font-size:15px;color:var(--muted);margin-bottom:10px">${pct}% correctas en el repaso</div>
+      <div class="dq-result-msg">${dqScore===total?'¡Superaste todas las preguntas que fallaste! Bien hecho.':dqWrong.length>0?'Aún tienes preguntas por reforzar. ¡Sigue intentando!':'¡Muy bien! Sigue practicando con un nuevo desafío.'}</div>
+      <div class="dq-actions">
+        ${dqWrong.length>0?`<button class="btn-next" style="background:linear-gradient(135deg,rgba(255,230,0,.18),rgba(255,230,0,.06));border-color:var(--volt);color:var(--volt)" onclick="dqReview()">🔁 Repasar ${dqWrong.length} restante${dqWrong.length===1?'':'s'}</button>`:''}
         <button class="btn-next" onclick="dqStart()">🔄 Nuevo desafío</button>
         <button class="back" onclick="show('hub');dqStop()">← Ir al hub</button>
       </div>
