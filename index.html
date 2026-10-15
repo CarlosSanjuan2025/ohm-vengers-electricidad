@@ -269,6 +269,10 @@
   .dq-opt.wrong{border-color:var(--magenta)!important;background:rgba(255,31,107,.14)!important;color:#ffc9da}
   .dq-fb{font-family:var(--display);font-size:13px;letter-spacing:.04em;margin-top:8px;min-height:20px}
   .dq-fb.ok{color:var(--green)} .dq-fb.no{color:var(--magenta)}
+  .dq-hint-btn{display:flex;align-items:center;gap:6px;margin:8px auto 0;background:none;border:1px solid rgba(255,230,0,.35);color:var(--volt);font-family:var(--display);font-size:12px;letter-spacing:.05em;border-radius:8px;padding:5px 14px;cursor:pointer;transition:background .2s}
+  .dq-hint-btn:hover{background:rgba(255,230,0,.1)}
+  .dq-hint-btn:disabled{opacity:.4;cursor:default}
+  .dq-hint-txt{font-size:12px;color:var(--volt);background:rgba(255,230,0,.08);border:1px solid rgba(255,230,0,.25);border-radius:8px;padding:7px 12px;margin-top:7px;display:none;text-align:left;line-height:1.45}
   /* resultado */
   .dq-result{
     border-radius:18px;padding:32px;text-align:center;margin-top:8px;
@@ -3184,56 +3188,56 @@ let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false, dqStre
 // Banco exclusivo del Desafío (50 preguntas) — Sesiones 01 y 02
 const dqBank=[
   /* ── Conceptos básicos (Sesión 01) ── */
-  {q:'¿Cómo se llama la fuerza que "empuja" a los electrones en un circuito?', opts:['Corriente','Voltaje','Resistencia','Potencia'], a:1},
-  {q:'¿Cuál es la unidad de la corriente eléctrica?', opts:['Voltio','Ohmio','Amperio','Watt'], a:2},
-  {q:'¿Qué símbolo representa la resistencia en fórmulas?', opts:['V','I','R','P'], a:2},
-  {q:'¿Qué instrumento se usa para medir el voltaje?', opts:['Amperímetro','Voltímetro','Ohmímetro','Vatímetro'], a:1},
-  {q:'¿Qué instrumento se usa para medir la corriente eléctrica?', opts:['Voltímetro','Ohmímetro','Amperímetro','Vatímetro'], a:2},
-  {q:'En la analogía con el agua, ¿qué representa el voltaje?', opts:['El caudal del agua','La tubería','La presión o altura del tanque','El material del tubo'], a:2},
-  {q:'En la analogía con el agua, ¿qué representa la corriente?', opts:['La presión del agua','El caudal que fluye','La tubería angosta','La bomba'], a:1},
-  {q:'¿Qué tipo de material tiene muy baja resistencia eléctrica?', opts:['Aislante','Semiconductor','Conductor','Plástico'], a:2},
-  {q:'¿Cuál de estos es un buen conductor eléctrico?', opts:['Madera','Vidrio','Cobre','Goma'], a:2},
-  {q:'¿Cuál de estos es un buen aislante eléctrico?', opts:['Aluminio','Hierro','Plástico','Plata'], a:2},
-  {q:'¿Qué símbolo representa el voltaje en fórmulas?', opts:['R','I','P','V'], a:3},
-  {q:'¿Qué símbolo representa la corriente en fórmulas?', opts:['V','I','R','W'], a:1},
-  {q:'¿Cómo se llama la oposición que un material ofrece al paso de la corriente?', opts:['Voltaje','Potencia','Resistencia','Energía'], a:2},
-  {q:'¿Qué ocurre con la corriente si aumentamos la resistencia y el voltaje se mantiene fijo?', opts:['Aumenta','Disminuye','Se mantiene igual','Se vuelve negativa'], a:1},
-  {q:'¿Qué ocurre con la corriente si aumentamos el voltaje y la resistencia se mantiene fija?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve cero'], a:2},
-  {q:'¿Cuál es la unidad de la resistencia eléctrica?', opts:['Voltio (V)','Amperio (A)','Watt (W)','Ohmio (Ω)'], a:3},
-  {q:'Una batería de 9 V conectada a un LED — ¿cuál de estas magnitudes "empuja" la corriente?', opts:['La resistencia del LED','La corriente','El voltaje de la batería','La temperatura'], a:2},
-  {q:'¿Cuál de las siguientes NO es una magnitud eléctrica básica?', opts:['Voltaje','Corriente','Temperatura','Resistencia'], a:2},
-  {q:'Si un cable es más grueso, ¿qué le pasa a su resistencia?', opts:['Aumenta','Disminuye','Se mantiene igual','Se duplica'], a:1},
-  {q:'Si un cable es más largo, ¿qué le pasa a su resistencia?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve cero'], a:2},
-  {q:'¿Qué representa la letra "Ω" en electricidad?', opts:['Voltio','Amperio','Ohmio','Watt'], a:2},
-  {q:'¿Qué elemento de un circuito se encarga de "oponerse" al paso de la corriente?', opts:['La batería','El cable conductor','La resistencia','El interruptor'], a:2},
-  {q:'Un circuito eléctrico necesita estar… para que circule corriente.', opts:['Abierto','Cerrado','En paralelo','Sin resistencia'], a:1},
-  {q:'¿Qué hace un interruptor (switch) en un circuito?', opts:['Aumenta el voltaje','Abre o cierra el paso de la corriente','Reduce la resistencia','Mide la corriente'], a:1},
-  {q:'¿Cuál de estas afirmaciones sobre el voltaje es correcta?', opts:['Es lo mismo que la corriente','Es la diferencia de potencial entre dos puntos','Es la oposición al flujo','Se mide en Amperios'], a:1},
+  {q:'¿Cómo se llama la fuerza que "empuja" a los electrones en un circuito?', opts:['Corriente','Voltaje','Resistencia','Potencia'], a:1, h:'Piensa en la "presión" que mueve los electrones, como una bomba de agua.'},
+  {q:'¿Cuál es la unidad de la corriente eléctrica?', opts:['Voltio','Ohmio','Amperio','Watt'], a:2, h:'Su símbolo es A, en honor al físico André-Marie Ampère.'},
+  {q:'¿Qué símbolo representa la resistencia en fórmulas?', opts:['V','I','R','P'], a:2, h:'R de Resistencia — la letra que "se resiste" a las demás.'},
+  {q:'¿Qué instrumento se usa para medir el voltaje?', opts:['Amperímetro','Voltímetro','Ohmímetro','Vatímetro'], a:1, h:'Su nombre incluye la palabra "volt".'},
+  {q:'¿Qué instrumento se usa para medir la corriente eléctrica?', opts:['Voltímetro','Ohmímetro','Amperímetro','Vatímetro'], a:2, h:'Mide Amperios → Ampere → Amperímetro.'},
+  {q:'En la analogía con el agua, ¿qué representa el voltaje?', opts:['El caudal del agua','La tubería','La presión o altura del tanque','El material del tubo'], a:2, h:'A mayor altura del tanque, mayor "empuje" — igual que mayor voltaje.'},
+  {q:'En la analogía con el agua, ¿qué representa la corriente?', opts:['La presión del agua','El caudal que fluye','La tubería angosta','La bomba'], a:1, h:'Es la cantidad de agua que pasa por el tubo — cuánto "fluye".'},
+  {q:'¿Qué tipo de material tiene muy baja resistencia eléctrica?', opts:['Aislante','Semiconductor','Conductor','Plástico'], a:2, h:'Deja pasar fácilmente la corriente — casi sin oponerle resistencia.'},
+  {q:'¿Cuál de estos es un buen conductor eléctrico?', opts:['Madera','Vidrio','Cobre','Goma'], a:2, h:'Es el material más usado en cables eléctricos domésticos.'},
+  {q:'¿Cuál de estos es un buen aislante eléctrico?', opts:['Aluminio','Hierro','Plástico','Plata'], a:2, h:'Es el recubrimiento que rodea los cables para protegernos.'},
+  {q:'¿Qué símbolo representa el voltaje en fórmulas?', opts:['R','I','P','V'], a:3, h:'V de Voltaje — o también V de Volt.'},
+  {q:'¿Qué símbolo representa la corriente en fórmulas?', opts:['V','I','R','W'], a:1, h:'I de Intensidad de corriente.'},
+  {q:'¿Cómo se llama la oposición que un material ofrece al paso de la corriente?', opts:['Voltaje','Potencia','Resistencia','Energía'], a:2, h:'Su unidad es el Ohmio (Ω) y frena el paso de los electrones.'},
+  {q:'¿Qué ocurre con la corriente si aumentamos la resistencia y el voltaje se mantiene fijo?', opts:['Aumenta','Disminuye','Se mantiene igual','Se vuelve negativa'], a:1, h:'Más obstáculo → menos flujo. Recuerda I = V / R.'},
+  {q:'¿Qué ocurre con la corriente si aumentamos el voltaje y la resistencia se mantiene fija?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve cero'], a:2, h:'Más "empuje" → más flujo. I = V / R — V sube, I sube.'},
+  {q:'¿Cuál es la unidad de la resistencia eléctrica?', opts:['Voltio (V)','Amperio (A)','Watt (W)','Ohmio (Ω)'], a:3, h:'Su símbolo es la letra griega omega: Ω.'},
+  {q:'Una batería de 9 V conectada a un LED — ¿cuál de estas magnitudes "empuja" la corriente?', opts:['La resistencia del LED','La corriente','El voltaje de la batería','La temperatura'], a:2, h:'La "fuerza" que mueve los electrones viene de la fuente de energía.'},
+  {q:'¿Cuál de las siguientes NO es una magnitud eléctrica básica?', opts:['Voltaje','Corriente','Temperatura','Resistencia'], a:2, h:'Las tres magnitudes básicas del circuito son V, I y R.'},
+  {q:'Si un cable es más grueso, ¿qué le pasa a su resistencia?', opts:['Aumenta','Disminuye','Se mantiene igual','Se duplica'], a:1, h:'Una tubería más ancha deja pasar más agua con menos esfuerzo.'},
+  {q:'Si un cable es más largo, ¿qué le pasa a su resistencia?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve cero'], a:2, h:'Más camino que recorrer = más "roce" = más resistencia.'},
+  {q:'¿Qué representa la letra "Ω" en electricidad?', opts:['Voltio','Amperio','Ohmio','Watt'], a:2, h:'Es la letra griega omega, símbolo del físico Georg Simon Ohm.'},
+  {q:'¿Qué elemento de un circuito se encarga de "oponerse" al paso de la corriente?', opts:['La batería','El cable conductor','La resistencia','El interruptor'], a:2, h:'Su nombre lo dice todo: se resiste al paso de la corriente.'},
+  {q:'Un circuito eléctrico necesita estar… para que circule corriente.', opts:['Abierto','Cerrado','En paralelo','Sin resistencia'], a:1, h:'Como un anillo: debe haber un camino completo sin interrupciones.'},
+  {q:'¿Qué hace un interruptor (switch) en un circuito?', opts:['Aumenta el voltaje','Abre o cierra el paso de la corriente','Reduce la resistencia','Mide la corriente'], a:1, h:'Como la llave de un grifo: controla si el circuito está completo o no.'},
+  {q:'¿Cuál de estas afirmaciones sobre el voltaje es correcta?', opts:['Es lo mismo que la corriente','Es la diferencia de potencial entre dos puntos','Es la oposición al flujo','Se mide en Amperios'], a:1, h:'El voltaje siempre se mide ENTRE dos puntos del circuito.'},
   /* ── Ley de Ohm (Sesión 02) ── */
-  {q:'¿Cuál es la fórmula correcta de la Ley de Ohm?', opts:['V = I + R','V = I × R','V = I ÷ R','V = I² + R'], a:1},
-  {q:'Si V = 12 V y R = 4 Ω, ¿cuánta corriente circula?', opts:['48 A','8 A','3 A','0,33 A'], a:2},
-  {q:'Si V = 9 V e I = 3 A, ¿cuánto vale la resistencia?', opts:['27 Ω','6 Ω','3 Ω','0,33 Ω'], a:1},
-  {q:'Si I = 2 A y R = 6 Ω, ¿cuánto es el voltaje?', opts:['3 V','4 V','8 V','12 V'], a:3},
-  {q:'Un bombillo tiene R = 100 Ω y está conectado a 110 V. ¿Cuánta corriente pasa?', opts:['1,1 A','10 A','0,91 A','100 A'], a:0},
-  {q:'Un cargador entrega 2 A con una resistencia de 6 Ω. ¿Qué voltaje produce?', opts:['3 V','8 V','12 V','4 V'], a:2},
-  {q:'Si R = 5 Ω e I = 4 A, ¿cuánto es el voltaje?', opts:['1,25 V','9 V','20 V','40 V'], a:2},
-  {q:'Si V = 24 V y R = 8 Ω, ¿cuánta corriente circula?', opts:['3 A','16 A','0,33 A','192 A'], a:0},
-  {q:'Un dispositivo necesita 2 A y tiene 50 Ω de resistencia. ¿Qué voltaje requiere?', opts:['25 V','52 V','100 V','200 V'], a:2},
-  {q:'Si duplicamos la resistencia sin cambiar el voltaje, la corriente…', opts:['Se duplica','Se reduce a la mitad','Se mantiene igual','Se cuadruplica'], a:1},
-  {q:'¿Cuál es la corriente en un circuito con V = 5 V y R = 25 Ω?', opts:['125 A','5 A','0,5 A','0,2 A'], a:3},
-  {q:'Si V = 6 V e I = 0,5 A, ¿cuánto vale R?', opts:['3 Ω','6 Ω','12 Ω','0,08 Ω'], a:2},
-  {q:'¿Cuál de estas fórmulas despeja correctamente la corriente de la Ley de Ohm?', opts:['I = V × R','I = V + R','I = V ÷ R','I = R ÷ V'], a:2},
-  {q:'¿Cuál de estas fórmulas despeja correctamente la resistencia de la Ley de Ohm?', opts:['R = V × I','R = V + I','R = I ÷ V','R = V ÷ I'], a:3},
-  {q:'Un ventilador opera a 110 V y consume 0,5 A. ¿Cuál es su resistencia?', opts:['55 Ω','55,5 Ω','220 Ω','110 Ω'], a:2},
-  {q:'Si R = 10 Ω e I = 2 A, ¿cuánto es el voltaje?', opts:['5 V','8 V','12 V','20 V'], a:3},
-  {q:'¿Qué le pasa al voltaje si la corriente aumenta y la resistencia se mantiene fija?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve negativo'], a:2},
-  {q:'Si I = 0,1 A y R = 470 Ω, ¿cuánto es el voltaje?', opts:['4,7 V','47 V','470 V','0,47 V'], a:1},
-  {q:'Si V = 3,3 V y R = 330 Ω, ¿cuánta corriente pasa?', opts:['100 A','0,1 A','0,01 A','10 mA'], a:3},
-  {q:'Un calentador tiene V = 220 V e I = 10 A. ¿Cuál es su resistencia?', opts:['2200 Ω','210 Ω','22 Ω','0,045 Ω'], a:2},
-  {q:'¿Cuál es la corriente en un circuito con V = 1,5 V y R = 0,5 Ω?', opts:['3 A','0,75 A','0,33 A','2 A'], a:0},
-  {q:'Un LED tiene R = 68 Ω e I = 0,02 A. ¿Qué voltaje necesita?', opts:['3,4 V','1,36 V','0,68 V','34 V'], a:1},
-  {q:'Si la resistencia se mantiene y el voltaje sube de 6 V a 12 V, la corriente…', opts:['Disminuye a la mitad','Se mantiene igual','Se duplica','Se cuadruplica'], a:2},
-  {q:'Un circuito tiene V = 45 V e I = 9 A. ¿Cuánto vale R?', opts:['405 Ω','36 Ω','5 Ω','54 Ω'], a:2},
+  {q:'¿Cuál es la fórmula correcta de la Ley de Ohm?', opts:['V = I + R','V = I × R','V = I ÷ R','V = I² + R'], a:1, h:'Voltaje = Corriente × Resistencia. Las tres magnitudes se multiplican o dividen, nunca se suman.'},
+  {q:'Si V = 12 V y R = 4 Ω, ¿cuánta corriente circula?', opts:['48 A','8 A','3 A','0,33 A'], a:2, h:'Usa I = V ÷ R. Divide 12 entre 4.'},
+  {q:'Si V = 9 V e I = 3 A, ¿cuánto vale la resistencia?', opts:['27 Ω','6 Ω','3 Ω','0,33 Ω'], a:1, h:'Usa R = V ÷ I. Divide 9 entre 3.'},
+  {q:'Si I = 2 A y R = 6 Ω, ¿cuánto es el voltaje?', opts:['3 V','4 V','8 V','12 V'], a:3, h:'Usa V = I × R. Multiplica 2 × 6.'},
+  {q:'Un bombillo tiene R = 100 Ω y está conectado a 110 V. ¿Cuánta corriente pasa?', opts:['1,1 A','10 A','0,91 A','100 A'], a:0, h:'Usa I = V ÷ R → 110 ÷ 100 = 1,1 A.'},
+  {q:'Un cargador entrega 2 A con una resistencia de 6 Ω. ¿Qué voltaje produce?', opts:['3 V','8 V','12 V','4 V'], a:2, h:'Usa V = I × R → 2 × 6 = 12 V.'},
+  {q:'Si R = 5 Ω e I = 4 A, ¿cuánto es el voltaje?', opts:['1,25 V','9 V','20 V','40 V'], a:2, h:'Usa V = I × R → 4 × 5 = 20 V.'},
+  {q:'Si V = 24 V y R = 8 Ω, ¿cuánta corriente circula?', opts:['3 A','16 A','0,33 A','192 A'], a:0, h:'Usa I = V ÷ R → 24 ÷ 8 = 3 A.'},
+  {q:'Un dispositivo necesita 2 A y tiene 50 Ω de resistencia. ¿Qué voltaje requiere?', opts:['25 V','52 V','100 V','200 V'], a:2, h:'Usa V = I × R → 2 × 50 = 100 V.'},
+  {q:'Si duplicamos la resistencia sin cambiar el voltaje, la corriente…', opts:['Se duplica','Se reduce a la mitad','Se mantiene igual','Se cuadruplica'], a:1, h:'I = V / R. Si R × 2, entonces I ÷ 2.'},
+  {q:'¿Cuál es la corriente en un circuito con V = 5 V y R = 25 Ω?', opts:['125 A','5 A','0,5 A','0,2 A'], a:3, h:'Usa I = V ÷ R → 5 ÷ 25 = 0,2 A.'},
+  {q:'Si V = 6 V e I = 0,5 A, ¿cuánto vale R?', opts:['3 Ω','6 Ω','12 Ω','0,08 Ω'], a:2, h:'Usa R = V ÷ I → 6 ÷ 0,5 = 12 Ω.'},
+  {q:'¿Cuál de estas fórmulas despeja correctamente la corriente de la Ley de Ohm?', opts:['I = V × R','I = V + R','I = V ÷ R','I = R ÷ V'], a:2, h:'De V = I × R, despejamos I dividiendo ambos lados entre R.'},
+  {q:'¿Cuál de estas fórmulas despeja correctamente la resistencia de la Ley de Ohm?', opts:['R = V × I','R = V + I','R = I ÷ V','R = V ÷ I'], a:3, h:'De V = I × R, despejamos R dividiendo ambos lados entre I.'},
+  {q:'Un ventilador opera a 110 V y consume 0,5 A. ¿Cuál es su resistencia?', opts:['55 Ω','55,5 Ω','220 Ω','110 Ω'], a:2, h:'Usa R = V ÷ I → 110 ÷ 0,5 = 220 Ω.'},
+  {q:'Si R = 10 Ω e I = 2 A, ¿cuánto es el voltaje?', opts:['5 V','8 V','12 V','20 V'], a:3, h:'Usa V = I × R → 2 × 10 = 20 V.'},
+  {q:'¿Qué le pasa al voltaje si la corriente aumenta y la resistencia se mantiene fija?', opts:['Disminuye','Se mantiene igual','Aumenta','Se vuelve negativo'], a:2, h:'V = I × R — si I sube y R es fija, V también sube.'},
+  {q:'Si I = 0,1 A y R = 470 Ω, ¿cuánto es el voltaje?', opts:['4,7 V','47 V','470 V','0,47 V'], a:1, h:'Usa V = I × R → 0,1 × 470 = 47 V.'},
+  {q:'Si V = 3,3 V y R = 330 Ω, ¿cuánta corriente pasa?', opts:['100 A','0,1 A','0,01 A','10 mA'], a:3, h:'I = 3,3 ÷ 330 = 0,01 A = 10 mA. Mismo valor, diferente unidad.'},
+  {q:'Un calentador tiene V = 220 V e I = 10 A. ¿Cuál es su resistencia?', opts:['2200 Ω','210 Ω','22 Ω','0,045 Ω'], a:2, h:'Usa R = V ÷ I → 220 ÷ 10 = 22 Ω.'},
+  {q:'¿Cuál es la corriente en un circuito con V = 1,5 V y R = 0,5 Ω?', opts:['3 A','0,75 A','0,33 A','2 A'], a:0, h:'Usa I = V ÷ R → 1,5 ÷ 0,5 = 3 A.'},
+  {q:'Un LED tiene R = 68 Ω e I = 0,02 A. ¿Qué voltaje necesita?', opts:['3,4 V','1,36 V','0,68 V','34 V'], a:1, h:'Usa V = I × R → 0,02 × 68 = 1,36 V.'},
+  {q:'Si la resistencia se mantiene y el voltaje sube de 6 V a 12 V, la corriente…', opts:['Disminuye a la mitad','Se mantiene igual','Se duplica','Se cuadruplica'], a:2, h:'V se duplica, R es igual → I = V/R también se duplica.'},
+  {q:'Un circuito tiene V = 45 V e I = 9 A. ¿Cuánto vale R?', opts:['405 Ω','36 Ω','5 Ω','54 Ω'], a:2, h:'Usa R = V ÷ I → 45 ÷ 9 = 5 Ω.'},
 ];
 
 function dqStart(){
@@ -3295,6 +3299,8 @@ function dqRenderQuestion(){
       <div class="dq-qt"><b>${dqIdx+1}.</b>${item.q}</div>
       ${item.opts.map((o,i)=>`<button class="dq-opt" id="dqOpt${i}" onclick="dqPick(${i})">${o}</button>`).join('')}
       <div class="dq-fb" id="dqFb"></div>
+      ${item.h?`<button class="dq-hint-btn" id="dqHintBtn" onclick="dqUseHint()">💡 Pista <span style="opacity:.7;font-size:11px">(-5 s)</span></button>
+      <div class="dq-hint-txt" id="dqHintTxt">${item.h}</div>`:''}
     </div>`;
   dqUpdateRing();
 }
@@ -3326,6 +3332,18 @@ function dqPick(oi){
   }
   dqIdx++;
   setTimeout(()=>{ if(dqActive) dqRenderQuestion(); },900);
+}
+function dqUseHint(){
+  const btn=document.getElementById('dqHintBtn');
+  const txt=document.getElementById('dqHintTxt');
+  if(!btn||!txt) return;
+  btn.disabled=true;
+  btn.textContent='💡 Pista usada';
+  txt.style.display='block';
+  // Descontar 5 segundos
+  dqSec=Math.max(1, dqSec-5);
+  dqUpdateRing();
+  playTone('triangle',330,.12,.1);
 }
 function dqTimeUp(){
   dqActive=false;
