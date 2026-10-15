@@ -1833,6 +1833,10 @@
             <div class="cert-sign-line">Carlos Mario Sanjuán Amador</div>
             <div class="cert-sign-sub">Docente · I.E.T.I. Nuestra Señora del Rosario · Universidad de Cartagena</div>
           </div>
+          <div style="margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:5px">
+            <canvas id="certQR" width="90" height="90" style="border-radius:6px;background:#fff;padding:4px"></canvas>
+            <div style="font-family:var(--display);font-size:10px;color:var(--muted);letter-spacing:.06em">Escanea para acceder al recurso</div>
+          </div>
         </div>
       </div>
       <div class="cert-actions no-print">
@@ -3615,6 +3619,128 @@ function updateGlossFab(screenId){
 }
 /* ==================== /GLOSARIO ==================== */
 
+/* ==================== QR OFFLINE (Canvas) ==================== */
+// Implementación mínima de QR Code versión 2-M para URLs cortas (100% offline)
+function drawQR(canvasId, text){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  // Codificación byte (ISO-8859-1) — suficiente para URLs ASCII
+  const bytes=[];
+  for(let i=0;i<text.length;i++) bytes.push(text.charCodeAt(i));
+  // Construir bitstream: modo byte (0100) + longitud (8 bits) + datos + terminador
+  const bits=[];
+  const push=(v,n)=>{ for(let i=n-1;i>=0;i--) bits.push((v>>i)&1); };
+  push(0b0100,4); push(bytes.length,8);
+  bytes.forEach(b=>push(b,8));
+  push(0,4); // terminador
+  // Rellenar a múltiplo de 8
+  while(bits.length%8) bits.push(0);
+  // Palabras de relleno estándar QR
+  const pad=[0xEC,0x11];
+  // Versión 2-M: 28 palabras de datos totales
+  const DATA_CODEWORDS=28;
+  const byteWords=[];
+  for(let i=0;i<bits.length;i+=8){
+    let b=0; for(let j=0;j<8;j++) b=(b<<1)|(bits[i+j]||0);
+    byteWords.push(b);
+  }
+  while(byteWords.length<DATA_CODEWORDS) byteWords.push(pad[(byteWords.length-Math.ceil(bits.length/8))%2]);
+
+  // Reed-Solomon GF(256) para versión 2-M: 16 palabras EC, generador estándar
+  const GF_EXP=new Uint8Array(512), GF_LOG=new Uint8Array(256);
+  let x=1; for(let i=0;i<255;i++){ GF_EXP[i]=x; GF_LOG[x]=i; x<<=1; if(x&256) x^=285; }
+  for(let i=255;i<512;i++) GF_EXP[i]=GF_EXP[i-255];
+  const gfMul=(a,b)=>a&&b?GF_EXP[GF_LOG[a]+GF_LOG[b]]:0;
+  // Polinomio generador versión 2-M (16 términos)
+  const GEN=[120,104,107,109,102,161,76,3,91,191,147,169,182,194,225,120];
+  const ec=new Array(GEN.length).fill(0);
+  byteWords.forEach(coeff=>{
+    const f=coeff^ec.shift(); ec.push(0);
+    GEN.forEach((g,i)=>{ ec[i]^=gfMul(g,f); });
+  });
+  const allWords=[...byteWords,...ec];
+
+  // Módulos de versión 2: 25×25
+  const N=25;
+  const modules=Array.from({length:N},()=>new Array(N).fill(null)); // null=libre
+  const func=Array.from({length:N},()=>new Array(N).fill(false));
+
+  // Patrón de búsqueda (finder pattern) 7×7 + separador
+  const setFinder=(r,c)=>{
+    for(let dr=-1;dr<=7;dr++) for(let dc=-1;dc<=7;dc++){
+      const rr=r+dr, cc=c+dc;
+      if(rr<0||rr>=N||cc<0||cc>=N) continue;
+      func[rr][cc]=true;
+      if(dr>=0&&dr<=6&&dc>=0&&dc<=6){
+        const onBorder=dr===0||dr===6||dc===0||dc===6;
+        const inner=dr>=2&&dr<=4&&dc>=2&&dc<=4;
+        modules[rr][cc]=(onBorder||inner)?1:0;
+      } else modules[rr][cc]=0; // separador blanco
+    }
+  };
+  setFinder(0,0); setFinder(0,N-7); setFinder(N-7,0);
+
+  // Patrón de alineación versión 2: centro en (18,18)
+  const setAlign=(r,c)=>{
+    for(let dr=-2;dr<=2;dr++) for(let dc=-2;dc<=2;dc++){
+      const rr=r+dr,cc=c+dc;
+      func[rr][cc]=true;
+      const onBorder=Math.abs(dr)===2||Math.abs(dc)===2;
+      modules[rr][cc]=(onBorder||(!dr&&!dc))?1:0;
+    }
+  };
+  setAlign(18,18);
+
+  // Timing patterns
+  for(let i=8;i<N-8;i++){
+    modules[6][i]=(i%2===0)?1:0; func[6][i]=true;
+    modules[i][6]=(i%2===0)?1:0; func[i][6]=true;
+  }
+
+  // Formato (máscara 0, nivel M = 01): bits precalculados estándar
+  // Cadena de formato = 101000100100101 (mask 0, EC M)
+  const fmtBits=[1,0,1,0,0,0,1,0,0,1,0,0,1,0,1];
+  const fmtPos=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+  fmtPos.forEach(([r,c],i)=>{ modules[r][c]=fmtBits[i]; func[r][c]=true; });
+  const fmtPos2=[[8,N-1],[8,N-2],[8,N-3],[8,N-4],[8,N-5],[8,N-6],[8,N-7],[N-8,8],[N-7,8],[N-6,8],[N-5,8],[N-4,8],[N-3,8],[N-2,8],[N-1,8]];
+  fmtPos2.forEach(([r,c],i)=>{ modules[r][c]=fmtBits[i]; func[r][c]=true; });
+  // Módulo oscuro fijo
+  modules[N-8][8]=1; func[N-8][8]=true;
+
+  // Colocar datos en zigzag (máscara 0: (row+col)%2===0 invierte)
+  const dataBits=[];
+  allWords.forEach(w=>{ for(let i=7;i>=0;i--) dataBits.push((w>>i)&1); });
+  let bitIdx=0;
+  for(let col=N-1;col>=0;col-=2){
+    if(col===6) col=5; // saltar columna timing
+    for(let row=0;row<N;row++){
+      const r=(col<=6)?(N-1-row):row; // sentido serpiente
+      for(let dc=0;dc<2;dc++){
+        const c=col-dc;
+        if(!func[r][c]&&bitIdx<dataBits.length){
+          const bit=dataBits[bitIdx++];
+          modules[r][c]=((r+c)%2===0)?(bit^1):bit; // máscara 0
+        }
+      }
+    }
+  }
+
+  // Dibujar en canvas
+  const quiet=4; // zona silenciosa
+  const total=N+quiet*2;
+  const S=Math.floor(90/total);
+  const off=Math.floor((90-S*total)/2);
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,90,90);
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      ctx.fillStyle=(modules[r][c]===1)?'#000000':'#ffffff';
+      ctx.fillRect(off+(quiet+c)*S, off+(quiet+r)*S, S, S);
+    }
+  }
+}
+/* ==================== /QR OFFLINE ==================== */
+
 function showCertificate(correct,pct,bonus,timeStr){
   document.getElementById('certName').textContent=studentName.toUpperCase();
   const info=document.getElementById('certStudentInfo');
@@ -3628,6 +3754,7 @@ function showCertificate(correct,pct,bonus,timeStr){
   saveToLeaderboard(studentName, studentData.grado, correct, pct, bonus||0, timeStr||'—');
   completed=Math.max(completed,5); saveProgress();
   gotoS5Step(2);
+  setTimeout(()=>drawQR('certQR','https://carlossanjuan2025.github.io/ohm-vengers-electricidad/'), 100);
   setTimeout(launchConfetti, 400);
   setTimeout(sfxCertificate, 200);
 }
