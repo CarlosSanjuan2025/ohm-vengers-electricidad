@@ -3097,6 +3097,8 @@ function pickExam(qi,oi,qEl){
   const answered=Object.keys(examAnswers).length;
   document.getElementById('examProgress').textContent=answered+' de '+examData.length+' respondidas';
   document.getElementById('finishExamBtn').disabled = answered<examData.length;
+  // clic suave — no revela si es correcto, solo confirma selección
+  playTone('sine',440,.06,.08);
 }
 function gradeExam(){
   examGraded=true;
@@ -3280,14 +3282,15 @@ function dqPick(oi){
   });
   const fb=document.getElementById('dqFb');
   if(fb){
-    if(correct){ fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!'; dqScore++; }
-    else{ fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a]; }
+    if(correct){ fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!'; dqScore++; sfxCorrect(); }
+    else{ fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a]; sfxWrong(); }
   }
   dqIdx++;
   setTimeout(()=>{ if(dqActive) dqRenderQuestion(); },900);
 }
 function dqTimeUp(){
   dqActive=false;
+  sfxTimeUp();
   const content=document.getElementById('dqContent');
   content.innerHTML=`
     <div class="dq-result fail">
@@ -3475,7 +3478,46 @@ function showCertificate(correct,pct,bonus,timeStr){
   completed=Math.max(completed,5); saveProgress();
   gotoS5Step(2);
   setTimeout(launchConfetti, 400);
+  setTimeout(sfxCertificate, 200);
 }
+
+/* ==================== SONIDOS ==================== */
+let _ac=null;
+function getAC(){
+  if(!_ac) try{ _ac=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  return _ac;
+}
+function playTone(type,freq,dur,vol,freqEnd){
+  const ac=getAC(); if(!ac) return;
+  const osc=ac.createOscillator(), gain=ac.createGain();
+  osc.connect(gain); gain.connect(ac.destination);
+  osc.type=type; osc.frequency.setValueAtTime(freq,ac.currentTime);
+  if(freqEnd) osc.frequency.linearRampToValueAtTime(freqEnd,ac.currentTime+dur);
+  gain.gain.setValueAtTime(vol,ac.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+  osc.start(ac.currentTime); osc.stop(ac.currentTime+dur);
+}
+function sfxCorrect(){
+  // dos notas ascendentes — sensación de acierto
+  playTone('sine',520,.10,.18);
+  setTimeout(()=>playTone('sine',780,.14,.18),100);
+}
+function sfxWrong(){
+  // tono descendente corto — señal de error sin ser agresivo
+  playTone('sawtooth',280,.22,.12,160);
+}
+function sfxCertificate(){
+  // fanfarria corta de 4 notas
+  const notes=[523,659,784,1047], delay=[0,120,240,380];
+  notes.forEach((f,i)=>setTimeout(()=>playTone('sine',f,.28,.15),delay[i]));
+}
+function sfxTimeUp(){
+  // pulso grave de alarma
+  playTone('square',180,.12,.14);
+  setTimeout(()=>playTone('square',180,.12,.14),160);
+  setTimeout(()=>playTone('square',140,.28,.14),320);
+}
+/* ==================== /SONIDOS ==================== */
 
 /* ==================== CONFETI ==================== */
 function launchConfetti(){
