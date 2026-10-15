@@ -743,6 +743,7 @@
   .acord-body{display:none;padding:0 16px 16px}
   .acord-body.open{display:block}
   .acord-item.open .acord-arrow{transform:rotate(180deg)}
+  .btn-next:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.6)}
   /* AWG */
   .awg-presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px}
   .awg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:4px}
@@ -1721,7 +1722,7 @@
         </div>
       </div>
 
-      <div class="s1nav" style="margin-top:18px"><span></span><button class="btn-next" onclick="gotoS3Step(1)">Siguiente: Calculadora de potencia →</button></div>
+      <div class="s1nav" style="margin-top:18px"><span id="s3p0hint" style="font-size:12px;color:var(--muted)">Abre los 4 temas para continuar</span><button class="btn-next" id="s3p0next" disabled onclick="gotoS3Step(1)">Siguiente: Calculadora de potencia →</button></div>
     </div>
 
     <!-- PASO 1: Potencia Eléctrica -->
@@ -3110,20 +3111,48 @@ const awgData=[
   {awg:6, dia:4.11,maxA:55,use:'Tableros / acometidas'}
 ];
 
+const acordVisited=new Set([0]); // Potencia ya visible por defecto
+
 function acordToggle(header){
   const item=header.parentElement;
   const body=item.querySelector('.acord-body');
   const isOpen=body.classList.contains('open');
+
+  // Cerrar todos los demás (acordeón exclusivo)
+  document.querySelectorAll('#s3 .acord-item').forEach((it,idx)=>{
+    const b=it.querySelector('.acord-body');
+    if(it!==item && b.classList.contains('open')){
+      b.classList.remove('open');
+      it.classList.remove('open');
+    }
+  });
+
+  // Abrir/cerrar el pulsado
   body.classList.toggle('open',!isOpen);
   item.classList.toggle('open',!isOpen);
+
   if(!isOpen){
-    // Renderizar canvas al abrir (estaban ocultos con display:none)
+    // Marcar como visitado y actualizar botón
+    const idx=Array.from(document.querySelectorAll('#s3 .acord-item')).indexOf(item);
+    acordVisited.add(idx);
+    acordCheckNext();
+    // Renderizar canvas (estaba display:none)
     const title=header.querySelector('.acord-title').textContent;
     if(title.includes('Potencia')) setTimeout(s6Update,50);
     else if(title.includes('AWG')) setTimeout(s9Update,50);
     else if(title.includes('Eficiencia')) setTimeout(s7Update,50);
     else if(title.includes('80%')) setTimeout(s8Update,50);
   }
+}
+
+function acordCheckNext(){
+  const btn=document.getElementById('s3p0next');
+  const hint=document.getElementById('s3p0hint');
+  if(!btn) return;
+  const allVisited=acordVisited.size>=4; // 0,1,2,3
+  btn.disabled=!allVisited;
+  if(hint) hint.textContent=allVisited?'¡Todos los temas revisados! 🎉':'Abre los '+( 4-acordVisited.size )+' tema(s) restante(s) para continuar';
+  if(hint) hint.style.color=allVisited?'var(--green)':'var(--muted)';
 }
 
 function gotoS3Step(n){
