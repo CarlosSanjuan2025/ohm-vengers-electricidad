@@ -4676,35 +4676,60 @@ function circDraw(V, Req, Itotal, voltages, currents){
     ctx.font='bold 11px Chakra Petch,monospace'; ctx.textAlign='center';
     ctx.fillText('I = '+(Itotal>=1?Itotal.toFixed(3)+'A':(Itotal*1000).toFixed(1)+'mA'), (lx+rx)/2, by+14);
   } else {
-    // paralelo: ramas verticales
-    const margin=30;
-    const avail=rx-lx-margin;
-    const rw2=Math.min(70,(avail/n)-8);
-    const gap2=(avail-rw2*n)/(n+1);
-    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
-    // cierre derecho
-    ctx.beginPath(); ctx.moveTo(rx,ty); ctx.lineTo(rx,by); ctx.stroke();
+    // paralelo: ramas verticales distribuidas entre rieles top y bottom
+    const railL=lx+2, railR=rx;
+    const midY=(ty+by)/2;
+    // riel vertical izquierdo (positivo)
+    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(railL,ty); ctx.lineTo(railL,by); ctx.stroke();
+    // riel vertical derecho (negativo)
+    ctx.beginPath(); ctx.moveTo(railR,ty); ctx.lineTo(railR,by); ctx.stroke();
+
+    // distribuir ramas uniformemente entre los rieles
+    const usable=railR-railL;
+    const branchW=Math.min(90, usable/n - 10);
+    const totalBranches=branchW*n;
+    const spacing=(usable-totalBranches)/(n+1);
+    const rBoxH=28, rBoxW=branchW-4;
+
     circRs.forEach((r,i)=>{
-      const bx2=lx+margin+gap2*(i+1)+rw2*i+rw2/2;
-      // rama vertical
-      ctx.strokeStyle='#00e5ff'; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.moveTo(bx2,ty); ctx.lineTo(bx2,ty+22); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bx2,by-22); ctx.lineTo(bx2,by); ctx.stroke();
-      // resistor
-      const rh2=44;
+      const cx=railL+spacing*(i+1)+branchW*i+branchW/2;
+      // cable vertical superior (riel→resistor)
+      ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(cx,ty); ctx.lineTo(cx,midY-rBoxH/2-2); ctx.stroke();
+      // cable vertical inferior (resistor→riel)
+      ctx.beginPath(); ctx.moveTo(cx,midY+rBoxH/2+2); ctx.lineTo(cx,by); ctx.stroke();
+
+      // caja resistor centrada en midY
+      const rx1=cx-rBoxW/2, ry1=midY-rBoxH/2;
       ctx.fillStyle='#c8a96e'; ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
       ctx.beginPath();
-      ctx.roundRect?ctx.roundRect(bx2-rw2/2,ty+22,rw2,rh2,4):ctx.rect(bx2-rw2/2,ty+22,rw2,rh2);
+      ctx.roundRect?ctx.roundRect(rx1,ry1,rBoxW,rBoxH,4):ctx.rect(rx1,ry1,rBoxW,rBoxH);
       ctx.fill(); ctx.stroke();
+
+      // label R y valor dentro de la caja
       ctx.fillStyle='#ff1f6b'; ctx.font='bold 9px Chakra Petch,monospace'; ctx.textAlign='center';
-      const rv=circRs[i]; ctx.fillText('R'+(i+1), bx2, ty+38);
-      ctx.fillText((rv>=1000?(rv/1000).toFixed(1)+'k':rv)+'Ω', bx2, ty+50);
-      ctx.fillStyle='#23ff9d'; ctx.font='9px monospace';
-      const ci=currents[i]; ctx.fillText((ci>=1?ci.toFixed(2)+'A':(ci*1000).toFixed(1)+'mA'), bx2, by-26);
+      const rv=circRs[i];
+      const rlabel='R'+(i+1)+':'+(rv>=1000?(rv/1000).toFixed(1)+'kΩ':rv+'Ω');
+      ctx.fillText(rlabel, cx, midY-2);
+
+      // corriente individual debajo de la caja
+      const ci=currents[i];
+      ctx.fillStyle='#23ff9d'; ctx.font='bold 9px Chakra Petch,monospace';
+      ctx.fillText((ci>=1?ci.toFixed(3)+'A':(ci*1000).toFixed(1)+'mA'), cx, midY+rBoxH/2+14);
+
+      // voltaje arriba de la caja (siempre = V en paralelo)
+      ctx.fillStyle='#ffe600'; ctx.font='9px Chakra Petch,monospace';
+      ctx.fillText(V+'V', cx, midY-rBoxH/2-6);
     });
-    // I total
-    ctx.fillStyle='#23ff9d'; ctx.font='bold 11px Chakra Petch,monospace'; ctx.textAlign='center';
-    ctx.fillText('I total = '+(Itotal>=1?Itotal.toFixed(3)+'A':(Itotal*1000).toFixed(1)+'mA'), (lx+rx)/2, by+14);
+
+    // flecha I total en la línea inferior
+    ctx.strokeStyle='#23ff9d'; ctx.fillStyle='#23ff9d'; ctx.lineWidth=2;
+    const ax=railL+40;
+    ctx.beginPath(); ctx.moveTo(railR-20,by); ctx.lineTo(ax,by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax,by); ctx.lineTo(ax+10,by-5); ctx.lineTo(ax+10,by+5); ctx.closePath(); ctx.fill();
+    ctx.font='bold 11px Chakra Petch,monospace'; ctx.textAlign='center';
+    ctx.fillText('I total = '+(Itotal>=1?Itotal.toFixed(3)+'A':(Itotal*1000).toFixed(1)+'mA'), (railL+railR)/2, by+14);
   }
   ctx.textAlign='left';
 }
