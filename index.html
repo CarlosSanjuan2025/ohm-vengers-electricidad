@@ -2838,7 +2838,7 @@ function completeSession4(){
 
 
 /* ==================== SESIÓN 05 — MISIÓN FINAL ==================== */
-let studentName='', examAnswers={}, examGraded=false;
+let studentName='', examAnswers={}, examGraded=false, builtExam=[];
 /* --- timer --- */
 let examStartTime=null, examTimerInterval=null, examElapsedSec=0;
 function startExamTimer(){
@@ -2894,10 +2894,24 @@ function checkName(){
   studentName=document.getElementById('studentName').value.trim();
   document.getElementById('startExamBtn').disabled = studentName.length<3;
 }
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
 function buildExam(){
   const box=document.getElementById('examBox');
   if(box.dataset.built) return; box.dataset.built='1'; box.innerHTML='';
-  examData.forEach((item,qi)=>{
+  // mezclar preguntas y opciones de cada pregunta en cada intento
+  const shuffledExam=shuffle(examData.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
+  shuffledExam.forEach(item=>{
+    // mezclar opciones manteniendo la respuesta correcta
+    const indexed=item.opts.map((o,i)=>({o,correct:i===item._origA}));
+    shuffle(indexed);
+    item.opts=indexed.map(x=>x.o);
+    item.a=indexed.findIndex(x=>x.correct);
+  });
+  builtExam=shuffledExam;
+  shuffledExam.forEach((item,qi)=>{
     const q=document.createElement('div'); q.className='q';
     q.innerHTML=`<div class="qt"><b>${qi+1}.</b> ${item.q}</div>`;
     const opts=document.createElement('div');
@@ -2923,7 +2937,7 @@ function gradeExam(){
   const sec=examElapsedSec;
   let correct=0;
   document.querySelectorAll('#examBox .q').forEach((qEl,qi)=>{
-    const picked=examAnswers[qi], ans=examData[qi].a;
+    const picked=examAnswers[qi], ans=builtExam[qi].a;
     if(picked===ans) correct++;
     qEl.querySelectorAll('.opt').forEach((b,i)=>{
       b.disabled=true; b.classList.remove('sel');
@@ -2958,7 +2972,7 @@ function gradeExam(){
   res.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function retryExam(){
-  examGraded=false; examAnswers={};
+  examGraded=false; examAnswers={}; builtExam=[];
   const box=document.getElementById('examBox'); box.dataset.built='';
   buildExam();
   startExamTimer();
