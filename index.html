@@ -3152,7 +3152,7 @@ function retryExam(){
 }
 /* ==================== DESAFÍO RÁPIDO ==================== */
 const DQ_TOTAL=90, DQ_QS=10;
-let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false;
+let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false, dqStreak=0;
 
 // Banco exclusivo del Desafío (50 preguntas) — Sesiones 01 y 02
 const dqBank=[
@@ -3210,7 +3210,7 @@ const dqBank=[
 ];
 
 function dqStart(){
-  dqActive=true; dqIdx=0; dqScore=0;
+  dqActive=true; dqIdx=0; dqScore=0; dqStreak=0;
   dqPool=shuffle(dqBank.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
   dqPool=dqPool.slice(0,DQ_QS);
   dqPool.forEach(item=>{
@@ -3282,8 +3282,20 @@ function dqPick(oi){
   });
   const fb=document.getElementById('dqFb');
   if(fb){
-    if(correct){ fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!'; dqScore++; sfxCorrect(); }
-    else{ fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a]; sfxWrong(); }
+    if(correct){
+      dqScore++; dqStreak++;
+      let streakMsg='';
+      if(dqStreak===3) streakMsg=' 🔥 ¡Racha de 3!';
+      else if(dqStreak===5) streakMsg=' 🔥🔥 ¡Racha de 5!';
+      else if(dqStreak>=7) streakMsg=' 🔥🔥🔥 ¡Imparable!';
+      fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!'+streakMsg;
+      sfxCorrect();
+      if(dqStreak>=3) setTimeout(()=>playTone('sine',1047,.18,.12),180); // nota extra en racha
+    } else {
+      dqStreak=0;
+      fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a];
+      sfxWrong();
+    }
   }
   dqIdx++;
   setTimeout(()=>{ if(dqActive) dqRenderQuestion(); },900);
@@ -3321,6 +3333,7 @@ function dqFinish(){
       <div style="font-size:48px;margin-bottom:6px">${pct===100?'🏆':pass?'⚡':'💡'}</div>
       <div class="dq-result-score">${dqScore}/${DQ_QS}</div>
       <div style="font-family:var(--display);font-size:15px;color:var(--muted);margin-bottom:6px">${pct}% · Tiempo restante: ${dqSec}s</div>
+      ${dqStreak>=3?`<div style="font-family:var(--display);font-size:14px;color:var(--volt);margin-bottom:8px">🔥 Mejor racha: ${dqStreak} seguidas</div>`:''}
       <div class="dq-result-msg">${msg}</div>
       <div class="dq-actions">
         <button class="btn-next" onclick="dqStart()">🔄 Nuevo desafío</button>
