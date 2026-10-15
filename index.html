@@ -4376,82 +4376,98 @@ function virDrawCircuit(V,I,R,P){
   const ctx=cv.getContext('2d');
   const W=cv.width, H=cv.height;
   ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#080c14'; ctx.fillRect(0,0,W,H);
 
-  // fondo
-  ctx.fillStyle='#080c14';
-  ctx.fillRect(0,0,W,H);
+  // Coordenadas del rectángulo del circuito
+  const lx=80, rx=W-50, ty=55, by=H-45, midY=(ty+by)/2, midX=(lx+rx)/2;
+  const lw=3;
 
-  const lx=60, rx=W-60, ty=40, by=H-40, cx=W/2, cy=H/2;
-  const lineW=3;
-
-  // alambres
-  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=lineW; ctx.lineJoin='round';
+  // ── Rectángulo de cables (cyan) ──────────────────────────────
+  // Lado izquierdo: de esquina sup a batería arriba, y batería abajo a esquina inf
+  // Lo dibujamos completo y luego la batería lo "tapa"
+  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=lw; ctx.lineJoin='round'; ctx.lineCap='round';
   ctx.beginPath();
-  ctx.moveTo(lx,ty); ctx.lineTo(rx,ty);  // top
-  ctx.moveTo(rx,ty); ctx.lineTo(rx,by);  // right
-  ctx.moveTo(lx,by); ctx.lineTo(rx,by);  // bottom
+  // lado superior: lx,ty → rx,ty
+  ctx.moveTo(lx,ty); ctx.lineTo(rx,ty);
+  // lado derecho: rx,ty → rx,by
+  ctx.moveTo(rx,ty); ctx.lineTo(rx,by);
+  // lado inferior: rx,by → lx,by
+  ctx.moveTo(rx,by); ctx.lineTo(lx,by);
+  // lado izquierdo: lx,by → lx,ty  (batería va encima)
+  ctx.moveTo(lx,ty); ctx.lineTo(lx,by);
   ctx.stroke();
 
-  // batería (izquierda)
-  const bh=50;
-  ctx.strokeStyle='#ffe600'; ctx.lineWidth=lineW;
-  ctx.beginPath(); ctx.moveTo(lx,ty); ctx.lineTo(lx,cy-bh/2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(lx,cy+bh/2); ctx.lineTo(lx,by); ctx.stroke();
-  // placas
-  [[cy-bh/2,20,3],[cy-bh/2+10,12,1.5],[cy+bh/2-10,20,3],[cy+bh/2,12,1.5]].forEach(([y,len,lw])=>{
-    ctx.strokeStyle='#ffe600'; ctx.lineWidth=lw;
-    ctx.beginPath(); ctx.moveTo(lx-len/2,y); ctx.lineTo(lx+len/2,y); ctx.stroke();
-  });
-  // + -
-  ctx.fillStyle='#ffe600'; ctx.font='bold 14px monospace';
-  ctx.fillText('+', lx-22, cy-bh/2+5);
-  ctx.fillText('−', lx-22, cy+bh/2+5);
-  // V label
-  ctx.fillStyle='#ffe600'; ctx.font='bold 13px Chakra Petch,monospace';
-  ctx.textAlign='center';
-  ctx.fillText(V+'V', lx, cy+bh/2+28);
+  // ── Batería (izquierda, centrada verticalmente) ───────────────
+  const bGap=14; // espacio entre placas del par
+  const bCy=midY;
+  // cables de la batería (amarillo) — sobreescriben el cyan del lado izquierdo
+  ctx.strokeStyle='#ffe600'; ctx.lineWidth=lw;
+  ctx.beginPath();
+  ctx.moveTo(lx,ty);   ctx.lineTo(lx, bCy-bGap-8); // cable superior batería
+  ctx.moveTo(lx,by);   ctx.lineTo(lx, bCy+bGap+8); // cable inferior batería
+  ctx.stroke();
+  // Par de placas superior (+): placa larga arriba
+  ctx.lineWidth=3.5; ctx.strokeStyle='#ffe600';
+  ctx.beginPath(); ctx.moveTo(lx-13,bCy-bGap-8); ctx.lineTo(lx+13,bCy-bGap-8); ctx.stroke();
+  ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(lx-8, bCy-bGap);   ctx.lineTo(lx+8, bCy-bGap);   ctx.stroke();
+  // Par de placas inferior (-): placa corta arriba
+  ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(lx-8, bCy+bGap);   ctx.lineTo(lx+8, bCy+bGap);   ctx.stroke();
+  ctx.lineWidth=3.5;
+  ctx.beginPath(); ctx.moveTo(lx-13,bCy+bGap+8); ctx.lineTo(lx+13,bCy+bGap+8); ctx.stroke();
+  // Símbolos + −
+  ctx.fillStyle='#ffe600'; ctx.font='bold 15px monospace'; ctx.textAlign='center';
+  ctx.fillText('+', lx-24, bCy-bGap-4);
+  ctx.fillText('−', lx-24, bCy+bGap+12);
+  // Etiqueta de voltaje debajo de la batería
+  ctx.font='bold 13px Chakra Petch,monospace';
+  ctx.fillText(V+'V', lx, by+16);
 
-  // resistor (arriba, centrado)
-  const rw=90, rh=22, ry=ty-rh/2;
-  ctx.fillStyle='#c8a96e';
-  ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
+  // ── Resistor (lado superior, centrado) ───────────────────────
+  const rw=100, rh=24;
+  const rx1=midX-rw/2, ry1=ty-rh/2;
+  // Cuerpo del resistor
+  ctx.fillStyle='#c8a96e'; ctx.strokeStyle='#a08040'; ctx.lineWidth=1.5;
   ctx.beginPath();
-  ctx.roundRect?ctx.roundRect(cx-rw/2,ry,rw,rh,5):ctx.rect(cx-rw/2,ry,rw,rh);
+  if(ctx.roundRect) ctx.roundRect(rx1,ry1,rw,rh,5); else ctx.rect(rx1,ry1,rw,rh);
   ctx.fill(); ctx.stroke();
-  // zigzag dentro
-  ctx.strokeStyle='#60340a'; ctx.lineWidth=2;
+  // Líneas internas del resistor (zigzag simplificado)
+  ctx.strokeStyle='#6b3d0a'; ctx.lineWidth=2; ctx.lineJoin='round';
   ctx.beginPath();
-  const zx=cx-rw/2+8, zw=rw-16, zcy=ty;
-  for(let i=0;i<=8;i++){
-    const px=zx+i*(zw/8), py=zcy+(i%2===0?-5:5);
+  const zSteps=8, zx0=rx1+10, zxEnd=rx1+rw-10, zyw=rh*0.35;
+  for(let i=0;i<=zSteps;i++){
+    const px=zx0+i*(zxEnd-zx0)/zSteps;
+    const py=ty+(i%2===0?-zyw:zyw);
     i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
   }
   ctx.stroke();
-  // R label
-  ctx.fillStyle='#ff1f6b'; ctx.font='bold 12px Chakra Petch,monospace';
-  ctx.textAlign='center';
-  ctx.fillText((R>=1000?(R/1000).toFixed(1)+'kΩ':R+'Ω'), cx, ry-6);
+  // Etiqueta resistencia encima del resistor
+  ctx.fillStyle='#ff1f6b'; ctx.font='bold 12px Chakra Petch,monospace'; ctx.textAlign='center';
+  ctx.fillText((R>=1000?(R/1000).toFixed(2)+'kΩ':R+'Ω'), midX, ry1-7);
 
-  // flecha de corriente (abajo)
-  const arrowY=by;
-  ctx.strokeStyle='#23ff9d'; ctx.lineWidth=2;
-  ctx.fillStyle='#23ff9d';
-  // línea con flecha de derecha a izquierda
+  // ── Flecha de corriente (lado inferior, de der→izq) ──────────
+  const ay=by, arrowMargin=30;
+  ctx.strokeStyle='#23ff9d'; ctx.lineWidth=2; ctx.fillStyle='#23ff9d';
+  // línea base sobre el cable inferior
   ctx.beginPath();
-  ctx.moveTo(rx-20,arrowY); ctx.lineTo(lx+20,arrowY);
+  ctx.moveTo(rx-arrowMargin, ay); ctx.lineTo(lx+arrowMargin+12, ay);
   ctx.stroke();
+  // punta de flecha hacia la izquierda
   ctx.beginPath();
-  ctx.moveTo(lx+20,arrowY); ctx.lineTo(lx+32,arrowY-5); ctx.lineTo(lx+32,arrowY+5); ctx.closePath();
-  ctx.fill();
-  // I label
-  ctx.fillStyle='#23ff9d'; ctx.font='bold 12px Chakra Petch,monospace';
-  ctx.textAlign='center';
-  ctx.fillText('I = '+(I*1000<1?I.toFixed(3)+'A':(I*1000).toFixed(1)+'mA'), cx, arrowY+18);
+  ctx.moveTo(lx+arrowMargin+12, ay);
+  ctx.lineTo(lx+arrowMargin+24, ay-6);
+  ctx.lineTo(lx+arrowMargin+24, ay+6);
+  ctx.closePath(); ctx.fill();
+  // Etiqueta I debajo
+  ctx.fillStyle='#23ff9d'; ctx.font='bold 12px Chakra Petch,monospace'; ctx.textAlign='center';
+  const iStr=I>=1?I.toFixed(3)+' A':(I*1000).toFixed(2)+' mA';
+  ctx.fillText('I = '+iStr, midX, ay+16);
 
-  // P label (derecha)
-  ctx.fillStyle='#bb86fc'; ctx.font='12px Chakra Petch,monospace';
-  ctx.textAlign='left';
-  ctx.fillText('P = '+(P>=1?P.toFixed(2)+'W':(P*1000).toFixed(1)+'mW'), rx+8, cy);
+  // ── Potencia (esquina derecha) ────────────────────────────────
+  ctx.fillStyle='#bb86fc'; ctx.font='12px Chakra Petch,monospace'; ctx.textAlign='right';
+  const pStr=P>=1?P.toFixed(3)+' W':(P*1000).toFixed(1)+' mW';
+  ctx.fillText('P = '+pStr, rx-4, midY);
 
   ctx.textAlign='left';
 }
@@ -4604,23 +4620,31 @@ function circDraw(V, Req, Itotal, voltages, currents){
   ctx.fillStyle='#080c14'; ctx.fillRect(0,0,W,H);
 
   const n=circRs.length;
-  const lx=55, rx=W-20, ty=30, by=H-30;
+  const lx=68, rx=W-18, ty=32, by=H-28;
   const bx=lx, cy2=(ty+by)/2;
 
-  // batería
-  ctx.strokeStyle='#ffe600'; ctx.lineWidth=2.5;
-  ctx.beginPath(); ctx.moveTo(bx,ty+10); ctx.lineTo(bx,cy2-20); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(bx,cy2+20); ctx.lineTo(bx,by-10); ctx.stroke();
-  [[cy2-20,18,2.5],[cy2-10,12,1.5],[cy2+10,18,2.5],[cy2+20,12,1.5]].forEach(([y,len,lw])=>{
-    ctx.lineWidth=lw;
-    ctx.beginPath(); ctx.moveTo(bx-len/2,y); ctx.lineTo(bx+len/2,y); ctx.stroke();
-  });
-  ctx.fillStyle='#ffe600'; ctx.font='bold 11px monospace'; ctx.textAlign='center';
-  ctx.fillText(V+'V', bx, by+10);
-  // líneas top/bottom batería a circuito
-  ctx.lineWidth=2;
+  // cables horizontales top/bottom
+  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2.5; ctx.lineCap='round';
   ctx.beginPath(); ctx.moveTo(bx,ty); ctx.lineTo(rx,ty); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(rx,by); ctx.stroke();
+  // cable vertical derecho (cierre)
+  ctx.beginPath(); ctx.moveTo(rx,ty); ctx.lineTo(rx,by); ctx.stroke();
+
+  // batería (lado izquierdo)
+  const bGap=11, bCy=cy2;
+  ctx.strokeStyle='#ffe600'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(bx,ty);  ctx.lineTo(bx,bCy-bGap-7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx,by);  ctx.lineTo(bx,bCy+bGap+7); ctx.stroke();
+  // placas + (largo arriba)
+  ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(bx-12,bCy-bGap-7); ctx.lineTo(bx+12,bCy-bGap-7); ctx.stroke();
+  ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(bx-7,bCy-bGap); ctx.lineTo(bx+7,bCy-bGap); ctx.stroke();
+  // placas - (corto arriba)
+  ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(bx-7,bCy+bGap); ctx.lineTo(bx+7,bCy+bGap); ctx.stroke();
+  ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(bx-12,bCy+bGap+7); ctx.lineTo(bx+12,bCy+bGap+7); ctx.stroke();
+  ctx.fillStyle='#ffe600'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
+  ctx.fillText('+',bx-22,bCy-bGap-3); ctx.fillText('−',bx-22,bCy+bGap+11);
+  ctx.font='bold 11px Chakra Petch,monospace';
+  ctx.fillText(V+'V', bx, by+14);
 
   if(circMode==='serie'){
     // resistencias en serie a lo largo de la línea superior
