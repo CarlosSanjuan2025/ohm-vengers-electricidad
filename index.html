@@ -220,6 +220,74 @@
   .status.open{color:var(--volt);border:1px solid rgba(255,230,0,.4);background:rgba(255,230,0,.08)}
   .status.lock{color:var(--muted);border:1px solid rgba(255,255,255,.12)}
 
+  /* ---------- desafío rápido ---------- */
+  .desafio-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:linear-gradient(135deg,rgba(255,31,107,.18),rgba(255,31,107,.06));
+    border:1px solid rgba(255,31,107,.5);color:var(--magenta);
+    font-family:var(--display);font-weight:700;letter-spacing:.08em;
+    font-size:13px;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s;
+  }
+  .desafio-btn:hover{background:rgba(255,31,107,.28);border-color:var(--magenta);}
+  /* pantalla */
+  #desafio{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .dq-wrap{max-width:680px;margin:0 auto;padding:clamp(24px,5vh,60px) 20px;width:100%}
+  /* countdown ring */
+  .dq-ring-wrap{display:flex;justify-content:center;margin-bottom:24px}
+  .dq-ring{position:relative;width:90px;height:90px}
+  .dq-ring svg{transform:rotate(-90deg);width:90px;height:90px}
+  .dq-ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+  .dq-ring .ring-bg{stroke:rgba(255,255,255,.08)}
+  .dq-ring .ring-fill{stroke:var(--cyan);transition:stroke-dashoffset .9s linear,stroke .3s}
+  .dq-ring-num{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:26px;color:var(--cyan);
+  }
+  .dq-ring.warn .ring-fill{stroke:var(--volt)}
+  .dq-ring.warn .dq-ring-num{color:var(--volt)}
+  .dq-ring.danger .ring-fill{stroke:var(--magenta)}
+  .dq-ring.danger .dq-ring-num{color:var(--magenta)}
+  /* header info */
+  .dq-header{text-align:center;margin-bottom:24px}
+  .dq-title{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.06em;color:var(--magenta)}
+  .dq-prog-txt{font-family:var(--display);font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:.04em}
+  /* pregunta */
+  .dq-question{
+    border:1px solid var(--panel-line);border-radius:16px;padding:24px;
+    background:var(--panel);margin-bottom:16px;
+  }
+  .dq-qt{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:16px;line-height:1.4}
+  .dq-qt b{color:var(--magenta);margin-right:6px}
+  .dq-opt{
+    width:100%;text-align:left;border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.02);color:var(--text);font-family:var(--body);
+    font-weight:600;font-size:15px;padding:12px 16px;border-radius:10px;
+    cursor:pointer;transition:.18s;margin-bottom:8px;display:block;
+  }
+  .dq-opt:hover:not(:disabled){border-color:var(--magenta);background:rgba(255,31,107,.08)}
+  .dq-opt.right{border-color:var(--green)!important;background:rgba(35,255,157,.14)!important;color:#bfffe2}
+  .dq-opt.wrong{border-color:var(--magenta)!important;background:rgba(255,31,107,.14)!important;color:#ffc9da}
+  .dq-fb{font-family:var(--display);font-size:13px;letter-spacing:.04em;margin-top:8px;min-height:20px}
+  .dq-fb.ok{color:var(--green)} .dq-fb.no{color:var(--magenta)}
+  /* resultado */
+  .dq-result{
+    border-radius:18px;padding:32px;text-align:center;margin-top:8px;
+    border:1px solid var(--green);background:linear-gradient(160deg,rgba(35,255,157,.1),transparent);
+  }
+  .dq-result.fail{border-color:var(--magenta);background:linear-gradient(160deg,rgba(255,31,107,.1),transparent)}
+  .dq-result-score{font-family:var(--display);font-weight:700;font-size:52px}
+  .dq-result.fail .dq-result-score{color:var(--magenta)}
+  .dq-result:not(.fail) .dq-result-score{color:var(--green)}
+  .dq-result-msg{font-size:16px;color:var(--text);margin:8px 0 20px;line-height:1.5}
+  .dq-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  /* intro */
+  .dq-intro{text-align:center;padding:20px 0}
+  .dq-intro-icon{font-size:56px;margin-bottom:10px}
+  .dq-intro-title{font-family:var(--display);font-weight:700;font-size:26px;color:var(--magenta);margin-bottom:10px}
+  .dq-intro-rules{list-style:none;padding:0;margin:18px 0;text-align:left;display:inline-block}
+  .dq-intro-rules li{padding:7px 0;font-size:15px;color:var(--text);display:flex;align-items:center;gap:10px}
+  .dq-intro-rules li::before{content:'⚡';flex-shrink:0}
+
   /* ---------- leaderboard ---------- */
   .lb-btn{
     display:inline-flex;align-items:center;gap:6px;
@@ -816,6 +884,7 @@
     <div class="hub-head">
       <h1>Centro de Operaciones</h1>
       <p id="hubGreet">Selecciona una sesión para continuar tu entrenamiento</p>
+      <button class="desafio-btn" onclick="show('desafio');dqStart()" style="margin-top:10px">⚡ Modo Desafío Rápido</button>
     </div>
 
     <!-- aviso de ascenso de rango -->
@@ -829,6 +898,14 @@
       </div>
     </div>
     <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<!-- ===================== DESAFÍO RÁPIDO ===================== -->
+<section id="desafio" class="screen">
+  <div class="dq-wrap">
+    <button class="back" onclick="show('hub');dqStop()">← Volver al hub</button>
+    <div id="dqContent"></div>
   </div>
 </section>
 
@@ -2981,6 +3058,130 @@ function retryExam(){
   document.getElementById('finishExamBtn').disabled=true;
   document.getElementById('s5').scrollTop=0;
 }
+/* ==================== DESAFÍO RÁPIDO ==================== */
+const DQ_TOTAL=60, DQ_QS=5;
+let dqTimer=null, dqSec=0, dqPool=[], dqIdx=0, dqScore=0, dqActive=false;
+
+function dqStart(){
+  dqActive=true; dqIdx=0; dqScore=0;
+  dqPool=shuffle(examData.map(item=>({...item,opts:[...item.opts],_origA:item.a})));
+  dqPool=dqPool.slice(0,DQ_QS);
+  dqPool.forEach(item=>{
+    const indexed=item.opts.map((o,i)=>({o,correct:i===item._origA}));
+    shuffle(indexed);
+    item.opts=indexed.map(x=>x.o);
+    item.a=indexed.findIndex(x=>x.correct);
+  });
+  dqSec=DQ_TOTAL;
+  dqRenderQuestion();
+  dqTickTimer();
+}
+function dqStop(){
+  clearInterval(dqTimer); dqTimer=null; dqActive=false;
+}
+function dqTickTimer(){
+  clearInterval(dqTimer);
+  dqUpdateRing();
+  dqTimer=setInterval(()=>{
+    dqSec--;
+    dqUpdateRing();
+    if(dqSec<=0){ clearInterval(dqTimer); dqTimeUp(); }
+  },1000);
+}
+function dqUpdateRing(){
+  const ring=document.getElementById('dqRing');
+  const fill=document.getElementById('dqFill');
+  const num=document.getElementById('dqNum');
+  if(!ring||!fill||!num) return;
+  const r=38, circ=2*Math.PI*r;
+  fill.style.strokeDasharray=circ;
+  fill.style.strokeDashoffset=circ*(1-dqSec/DQ_TOTAL);
+  num.textContent=dqSec;
+  ring.className='dq-ring'+(dqSec<=10?' danger':dqSec<=20?' warn':'');
+}
+function dqRenderQuestion(){
+  if(dqIdx>=DQ_QS){ dqFinish(); return; }
+  const item=dqPool[dqIdx];
+  const content=document.getElementById('dqContent');
+  content.innerHTML=`
+    <div class="dq-header">
+      <div class="dq-title">⚡ DESAFÍO RÁPIDO</div>
+      <div class="dq-prog-txt">Pregunta ${dqIdx+1} de ${DQ_QS} · Puntaje: ${dqScore}</div>
+    </div>
+    <div class="dq-ring-wrap">
+      <div class="dq-ring" id="dqRing">
+        <svg viewBox="0 0 90 90">
+          <circle class="ring-bg" cx="45" cy="45" r="38"/>
+          <circle class="ring-fill" id="dqFill" cx="45" cy="45" r="38"/>
+        </svg>
+        <div class="dq-ring-num" id="dqNum">${dqSec}</div>
+      </div>
+    </div>
+    <div class="dq-question">
+      <div class="dq-qt"><b>${dqIdx+1}.</b>${item.q}</div>
+      ${item.opts.map((o,i)=>`<button class="dq-opt" id="dqOpt${i}" onclick="dqPick(${i})">${o}</button>`).join('')}
+      <div class="dq-fb" id="dqFb"></div>
+    </div>`;
+  dqUpdateRing();
+}
+function dqPick(oi){
+  if(!dqActive) return;
+  const item=dqPool[dqIdx];
+  const correct=oi===item.a;
+  // deshabilitar opciones
+  item.opts.forEach((_,i)=>{
+    const b=document.getElementById('dqOpt'+i);
+    if(b){ b.disabled=true; if(i===item.a) b.classList.add('right'); else if(i===oi) b.classList.add('wrong'); }
+  });
+  const fb=document.getElementById('dqFb');
+  if(fb){
+    if(correct){ fb.className='dq-fb ok'; fb.textContent='✓ ¡Correcto!'; dqScore++; }
+    else{ fb.className='dq-fb no'; fb.textContent='✗ Era: '+item.opts[item.a]; }
+  }
+  dqIdx++;
+  setTimeout(()=>{ if(dqActive) dqRenderQuestion(); },900);
+}
+function dqTimeUp(){
+  dqActive=false;
+  const content=document.getElementById('dqContent');
+  content.innerHTML=`
+    <div class="dq-result fail">
+      <div style="font-size:52px;margin-bottom:8px">⏰</div>
+      <div class="dq-result-score" style="font-size:36px">¡Tiempo agotado!</div>
+      <div class="dq-result-msg">Completaste ${dqIdx} de ${DQ_QS} preguntas · Puntaje: ${dqScore}/${dqIdx||1}</div>
+      <div class="dq-actions">
+        <button class="btn-next" onclick="dqStart()">🔄 Intentar de nuevo</button>
+        <button class="back" onclick="show('hub');dqStop()">← Ir al hub</button>
+      </div>
+    </div>`;
+}
+function dqFinish(){
+  dqActive=false;
+  clearInterval(dqTimer);
+  const pct=Math.round(dqScore/DQ_QS*100);
+  const pass=dqScore>=4;
+  const msgs=[
+    'Sigue practicando, ¡la próxima será mejor!',
+    '¡Bien hecho! Estás mejorando.',
+    '¡Excelente velocidad y precisión!',
+    '¡Perfecto! Eres un verdadero Ohm-Venger.'
+  ];
+  const msg=dqScore<=1?msgs[0]:dqScore<=3?msgs[1]:dqScore<=4?msgs[2]:msgs[3];
+  const content=document.getElementById('dqContent');
+  content.innerHTML=`
+    <div class="dq-result${pass?'':' fail'}">
+      <div style="font-size:48px;margin-bottom:6px">${pct===100?'🏆':pass?'⚡':'💡'}</div>
+      <div class="dq-result-score">${dqScore}/${DQ_QS}</div>
+      <div style="font-family:var(--display);font-size:15px;color:var(--muted);margin-bottom:6px">${pct}% · Tiempo restante: ${dqSec}s</div>
+      <div class="dq-result-msg">${msg}</div>
+      <div class="dq-actions">
+        <button class="btn-next" onclick="dqStart()">🔄 Nuevo desafío</button>
+        <button class="back" onclick="show('hub');dqStop()">← Ir al hub</button>
+      </div>
+    </div>`;
+}
+/* ==================== /DESAFÍO RÁPIDO ==================== */
+
 /* ==================== LEADERBOARD ==================== */
 const LB_KEY='ohmvengers_leaderboard';
 function saveToLeaderboard(name,grado,correct,pct,bonus,timeStr){
