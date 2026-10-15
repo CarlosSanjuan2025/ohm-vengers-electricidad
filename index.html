@@ -820,6 +820,18 @@
     border:1px solid rgba(255,230,0,.4);border-radius:8px;
     padding:6px 16px;letter-spacing:.06em;
   }
+  /* retroalimentación del examen */
+  .exam-fb{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  .exam-fb-item{border-radius:12px;padding:12px 14px;text-align:left;border:1px solid transparent;font-size:14px;line-height:1.5}
+  .exam-fb-item.fb-ok{background:rgba(35,255,157,.08);border-color:rgba(35,255,157,.3)}
+  .exam-fb-item.fb-no{background:rgba(255,31,107,.08);border-color:rgba(255,31,107,.3)}
+  .exam-fb-q{font-family:var(--display);font-size:13px;color:var(--text);margin-bottom:5px}
+  .exam-fb-ans{font-size:13px}
+  .exam-fb-ans.ok{color:var(--green)}
+  .exam-fb-ans.no{color:var(--magenta)}
+  .exam-fb-correct{color:var(--green);font-size:13px;margin-top:3px}
+  .exam-fb-toggle{background:none;border:1px solid rgba(0,229,255,.3);color:var(--cyan);font-family:var(--display);font-size:13px;border-radius:8px;padding:7px 16px;cursor:pointer;margin:0 auto 4px;display:block;letter-spacing:.05em}
+  .exam-fb-toggle:hover{background:rgba(0,229,255,.08)}
   /* certificado */
   .cert{padding:8px;margin-top:8px}
   .cert-inner{position:relative;border:2px solid var(--cyan);border-radius:18px;padding:44px 38px;text-align:center;background:radial-gradient(80% 70% at 50% 0%,rgba(0,229,255,.1),transparent 70%),linear-gradient(180deg,#070a0f,#04060a);box-shadow:0 0 50px rgba(0,229,255,.2),inset 0 0 40px rgba(0,229,255,.05);overflow:hidden}
@@ -3129,6 +3141,19 @@ function gradeExam(){
   } else if(!pass){
     bonusHtml=`<p style="color:var(--muted);font-size:13px;margin:0 0 14px">⏱ Tiempo: ${timeStr}</p>`;
   }
+  // Construir retroalimentación por pregunta
+  let fbHtml='';
+  builtExam.forEach((item,qi)=>{
+    const picked=examAnswers[qi], ans=item.a, ok=(picked===ans);
+    const icon=ok?'✓':'✗';
+    const pickedTxt=(picked!==undefined)?item.opts[picked]:'Sin respuesta';
+    fbHtml+=`<div class="exam-fb-item ${ok?'fb-ok':'fb-no'}">
+      <div class="exam-fb-q">${qi+1}. ${item.q}</div>
+      <div class="exam-fb-ans ${ok?'ok':'no'}">${icon} Tu respuesta: <strong>${pickedTxt}</strong></div>
+      ${!ok?`<div class="exam-fb-correct">✔ Correcta: <strong>${item.opts[ans]}</strong></div>`:''}
+    </div>`;
+  });
+
   const res=document.getElementById('examResult');
   res.className='exam-result show';
   res.innerHTML=`<div class="er-box ${pass?'pass':'fail'}">
@@ -3137,7 +3162,9 @@ function gradeExam(){
     <div class="er-msg">${pass?'¡Excelente, Agente! Has superado la evaluación final y te has ganado tu certificación.':'Aún no alcanzas el mínimo de 11 aciertos. Repasa las sesiones y vuelve a intentarlo: ¡tú puedes!'}</div>
     ${pass?'<button class="btn-next" style="margin:0 auto" onclick="showCertificate('+correct+','+pct+','+bonus+',\''+timeStr+'\')">🏆 Ver mi certificado →</button>'
           :'<button class="btn-next" style="margin:0 auto" onclick="retryExam()">🔄 Reintentar evaluación</button>'}
-  </div>`;
+  </div>
+  <button class="exam-fb-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'flex':'none';this.textContent=this.textContent.includes('▼')?'▲ Ocultar retroalimentación':'▼ Ver retroalimentación pregunta a pregunta'">▼ Ver retroalimentación pregunta a pregunta</button>
+  <div class="exam-fb" style="display:none">${fbHtml}</div>`;
   res.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function retryExam(){
