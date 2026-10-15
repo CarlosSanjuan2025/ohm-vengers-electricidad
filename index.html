@@ -373,6 +373,68 @@
   }
   .lb-clear:hover{background:rgba(255,31,107,.12);}
 
+  /* ---------- glosario ---------- */
+  #glossOverlay{
+    display:none;position:fixed;inset:0;z-index:900;
+    background:rgba(6,7,9,.88);backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;padding:20px;
+  }
+  #glossOverlay.open{display:flex;}
+  .gloss-modal{
+    width:100%;max-width:680px;max-height:90vh;overflow-y:auto;
+    background:#0d1117;border:1px solid rgba(0,229,255,.25);
+    border-radius:18px;box-shadow:0 0 60px rgba(0,229,255,.12);
+    padding:32px;
+  }
+  .gloss-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .gloss-title{
+    font-family:var(--display);font-size:22px;font-weight:700;
+    color:var(--cyan);letter-spacing:.08em;
+  }
+  .gloss-search{
+    width:100%;padding:9px 14px;margin-bottom:20px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(0,229,255,.2);
+    border-radius:8px;color:var(--text);font-family:var(--body);font-size:14px;
+    outline:none;transition:.2s;
+  }
+  .gloss-search:focus{border-color:var(--cyan);background:rgba(0,229,255,.06);}
+  .gloss-search::placeholder{color:var(--muted);}
+  .gloss-list{display:flex;flex-direction:column;gap:10px;}
+  .gloss-item{
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;padding:14px 16px;transition:.2s;
+  }
+  .gloss-item:hover{border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.04);}
+  .gloss-term{
+    font-family:var(--display);font-weight:700;font-size:15px;
+    color:var(--cyan);letter-spacing:.04em;margin-bottom:4px;
+  }
+  .gloss-formula{
+    font-family:var(--display);font-size:13px;color:var(--volt);
+    margin-bottom:4px;
+  }
+  .gloss-def{color:var(--text);font-size:14px;line-height:1.5;}
+  .gloss-tag{
+    display:inline-block;margin-top:6px;font-size:11px;font-family:var(--display);
+    font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:20px;
+    background:rgba(0,229,255,.1);color:var(--muted);
+  }
+  .gloss-empty{text-align:center;color:var(--muted);padding:30px 0;font-size:15px;}
+  /* botón flotante en sesiones */
+  .gloss-fab{
+    position:fixed;bottom:24px;right:24px;z-index:80;
+    display:none;align-items:center;gap:6px;
+    background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.4);
+    color:var(--cyan);font-family:var(--display);font-weight:700;
+    font-size:13px;letter-spacing:.06em;padding:9px 16px;border-radius:30px;
+    cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(0,229,255,.15);
+  }
+  .gloss-fab:hover{background:rgba(0,229,255,.22);border-color:var(--cyan);}
+  .gloss-fab.visible{display:flex;}
+
   /* ---------- session intro panel ---------- */
   #session,#s1{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .s-wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vh,70px) 24px;width:100%}
@@ -876,6 +938,7 @@
       <span class="bar"><i id="progBar"></i></span>
       <span class="pct" id="progPct">0%</span>
       <button class="lb-btn" onclick="openLeaderboard()" title="Tabla de clasificación">🏆 Ranking</button>
+      <button class="lb-btn" onclick="openGlossary()" title="Glosario de términos" style="border-color:rgba(0,229,255,.5);color:var(--cyan);">📖 Glosario</button>
       <button class="reset-btn" onclick="resetProgress()" title="Reiniciar progreso">↺</button>
     </div>
   </div>
@@ -923,6 +986,21 @@
     </div>
   </div>
 </div>
+
+<!-- ===================== GLOSARIO MODAL ===================== -->
+<div id="glossOverlay" onclick="closeGlossOnOverlay(event)">
+  <div class="gloss-modal">
+    <div class="gloss-header">
+      <div class="gloss-title">📖 Glosario Eléctrico</div>
+      <button class="lb-close" onclick="closeGlossary()" aria-label="Cerrar">✕</button>
+    </div>
+    <input class="gloss-search" id="glossSearch" type="text" placeholder="Buscar término…" oninput="filterGlossary(this.value)">
+    <div class="gloss-list" id="glossList"></div>
+  </div>
+</div>
+
+<!-- Botón flotante para sesiones -->
+<button class="gloss-fab" id="glossFab" onclick="openGlossary()">📖 Glosario</button>
 
 <!-- ===================== SESIÓN 01 ===================== -->
 <section id="s1" class="screen">
@@ -1826,6 +1904,7 @@ function show(id){
   document.getElementById(id).scrollTop = 0;
   document.querySelector('.credit').style.display = (id==='welcome') ? 'block' : 'none';
   if(typeof a11yAutoRead==='function') a11yAutoRead();
+  if(typeof updateGlossFab==='function') updateGlossFab(id);
 }
 let studentData = {name:'', grado:'', inst:''};
 function checkReg(){
@@ -3318,6 +3397,69 @@ function clearLeaderboard(){
   renderLeaderboard();
 }
 /* ==================== /LEADERBOARD ==================== */
+
+/* ==================== GLOSARIO ==================== */
+const glossData=[
+  {term:'Voltaje (V)', formula:'V = I × R', def:'La diferencia de potencial eléctrico entre dos puntos. Es la "presión" que empuja a los electrones a través del circuito. Se mide en Voltios (V).', tag:'Sesión 01'},
+  {term:'Corriente (I)', formula:'I = V ÷ R', def:'El flujo de cargas eléctricas que circula por un conductor. Equivale al caudal de agua en una tubería. Se mide en Amperios (A).', tag:'Sesión 01'},
+  {term:'Resistencia (R)', formula:'R = V ÷ I', def:'La oposición que ofrece un material al paso de la corriente eléctrica. A mayor resistencia, menor corriente para un mismo voltaje. Se mide en Ohmios (Ω).', tag:'Sesión 01'},
+  {term:'Ley de Ohm', formula:'V = I × R', def:'Establece que el voltaje en un circuito es igual a la corriente multiplicada por la resistencia. Permite calcular cualquiera de las tres magnitudes si se conocen las otras dos.', tag:'Sesión 02'},
+  {term:'Potencia (P)', formula:'P = V × I = I² × R', def:'La energía eléctrica consumida o entregada por unidad de tiempo. Se mide en Watts (W). Un dispositivo de mayor potencia consume más energía en el mismo tiempo.', tag:'Sesión 03'},
+  {term:'Eficiencia (η)', formula:'η = (P_útil ÷ P_total) × 100%', def:'Porcentaje de la energía de entrada que se convierte en trabajo útil. Un motor con 85% de eficiencia convierte el 85% de la electricidad en movimiento y pierde el 15% en calor.', tag:'Sesión 03'},
+  {term:'Caída de tensión', formula:'V_pérdida = I × R_cable', def:'Pérdida de voltaje que ocurre a lo largo de un cable por su resistencia interna. Una caída mayor al 5% puede causar mal funcionamiento del dispositivo conectado.', tag:'Sesión 03'},
+  {term:'Factor de seguridad 80%', formula:'I_diseño = I_real ÷ 0,8', def:'Norma de instalación eléctrica que indica que la carga continua no debe superar el 80% de la capacidad del breaker o cable. Previene sobrecalentamiento y riesgo de incendio.', tag:'Sesión 03'},
+  {term:'Calibre AWG', formula:'—', def:'Sistema americano de medida del grosor de los cables. A menor número AWG, mayor diámetro y mayor capacidad de corriente. AWG 8 soporta más corriente que AWG 14.', tag:'Sesión 03'},
+  {term:'Circuito en Serie', formula:'R_total = R1 + R2 + …', def:'Configuración donde los componentes están conectados uno tras otro en una sola trayectoria. La misma corriente circula por todos; si uno falla, el circuito se interrumpe.', tag:'Sesión 04'},
+  {term:'Circuito en Paralelo', formula:'1/R_total = 1/R1 + 1/R2 + …', def:'Configuración donde los componentes comparten los mismos dos nodos. El mismo voltaje aparece en todas las ramas; si una rama falla, las demás siguen funcionando.', tag:'Sesión 04'},
+  {term:'Breaker (interruptor termomagnético)', formula:'—', def:'Dispositivo de protección que corta el circuito automáticamente cuando la corriente supera su capacidad nominal. Se elige según la carga total aplicando el factor del 80%.', tag:'Sesión 04'},
+  {term:'Cortocircuito', formula:'—', def:'Conexión directa entre los terminales de una fuente sin resistencia significativa. Provoca una corriente extremadamente alta que puede dañar equipos o causar incendios.', tag:'Sesión 01'},
+  {term:'Conductor eléctrico', formula:'—', def:'Material con baja resistencia que permite el paso fácil de la corriente. Ejemplos: cobre, aluminio, plata. El cobre es el más usado en instalaciones eléctricas.', tag:'Sesión 01'},
+  {term:'Aislante eléctrico', formula:'—', def:'Material con muy alta resistencia que bloquea el paso de la corriente. Ejemplos: plástico, goma, vidrio, cerámica. Protege a las personas del contacto con conductores energizados.', tag:'Sesión 01'},
+  {term:'Amperímetro', formula:'—', def:'Instrumento que mide la corriente eléctrica en un circuito. Se conecta en serie con el componente que se quiere medir.', tag:'Sesión 01'},
+  {term:'Voltímetro', formula:'—', def:'Instrumento que mide la diferencia de potencial (voltaje) entre dos puntos. Se conecta en paralelo con el componente que se quiere medir.', tag:'Sesión 01'},
+  {term:'Ohmímetro', formula:'—', def:'Instrumento que mide la resistencia eléctrica de un componente. Se usa con el circuito desconectado de la fuente de energía.', tag:'Sesión 02'},
+];
+
+let glossFiltered=[...glossData];
+
+function renderGlossary(list){
+  const container=document.getElementById('glossList');
+  if(!list.length){
+    container.innerHTML='<div class="gloss-empty">No se encontraron términos.</div>';
+    return;
+  }
+  container.innerHTML=list.map(item=>`
+    <div class="gloss-item">
+      <div class="gloss-term">${esc(item.term)}</div>
+      ${item.formula!=='—'?`<div class="gloss-formula">${esc(item.formula)}</div>`:''}
+      <div class="gloss-def">${esc(item.def)}</div>
+      <span class="gloss-tag">${esc(item.tag)}</span>
+    </div>
+  `).join('');
+}
+
+function filterGlossary(q){
+  const s=q.toLowerCase().trim();
+  glossFiltered=s?glossData.filter(i=>i.term.toLowerCase().includes(s)||i.def.toLowerCase().includes(s)):[...glossData];
+  renderGlossary(glossFiltered);
+}
+
+function openGlossary(){
+  document.getElementById('glossSearch').value='';
+  glossFiltered=[...glossData];
+  renderGlossary(glossFiltered);
+  document.getElementById('glossOverlay').classList.add('open');
+}
+function closeGlossary(){document.getElementById('glossOverlay').classList.remove('open');}
+function closeGlossOnOverlay(e){if(e.target===document.getElementById('glossOverlay'))closeGlossary();}
+
+// Muestra/oculta el FAB según la pantalla activa
+function updateGlossFab(screenId){
+  const hidden=['hub','desafio','s5']; // hub tiene botón propio; s5 = misión final
+  const fab=document.getElementById('glossFab');
+  if(fab) fab.classList.toggle('visible', !hidden.includes(screenId));
+}
+/* ==================== /GLOSARIO ==================== */
 
 function showCertificate(correct,pct,bonus,timeStr){
   document.getElementById('certName').textContent=studentName.toUpperCase();
