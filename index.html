@@ -2541,9 +2541,10 @@ function enterMission(){
   if(sn){ sn.value=studentData.name; if(typeof checkName==='function') checkName(); }
   const p = document.getElementById('powerup');
   p.classList.remove('go'); void p.offsetWidth; p.classList.add('go');
-  setTimeout(()=>{ show('hub'); renderHub(); }, 360);
+  setTimeout(()=>{ show('hub'); renderHub(); sessionTimerStart(); }, 360);
 }
 function goHub(){
+  sessionTimerStop();
   if(waterRAF){cancelAnimationFrame(waterRAF); waterRAF=null;}
   if(simRAF){cancelAnimationFrame(simRAF); simRAF=null;}
   if(typeof s3AWGRAF!=='undefined'&&s3AWGRAF){cancelAnimationFrame(s3AWGRAF);s3AWGRAF=null;}
@@ -2610,6 +2611,7 @@ function closeRankUp(){
 
 /* ---------------- sesión ---------------- */
 function openSession(s){
+  sessionTimerStart();
   if(s.id===1){ show('s1'); gotoS1Step(0); return; }
   if(s.id===2){ show('s2'); gotoS2Step(0); return; }
   if(s.id===3){ show('s3'); gotoS3Step(0); return; }
@@ -4232,6 +4234,25 @@ function exportLbCSV(){
 
 /* ==================== ESTADÍSTICAS PERSONALES ==================== */
 const STATS_KEY='ohmvengers_stats';
+let _sessionStart=null; // marca cuando el estudiante entra a una sesión
+function sessionTimerStart(){ _sessionStart=Date.now(); }
+function sessionTimerStop(){
+  if(!_sessionStart) return;
+  const sec=Math.floor((Date.now()-_sessionStart)/1000);
+  _sessionStart=null;
+  if(sec<2) return; // descartar entradas accidentales
+  const s=loadStats();
+  s.totalSec=(s.totalSec||0)+sec;
+  s.sessions=(s.sessions||0)+1;
+  saveStats(s);
+}
+function fmtTime(sec){
+  if(!sec) return '—';
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+  if(h>0) return h+'h '+m+'m';
+  if(m>0) return m+'m '+s+'s';
+  return s+'s';
+}
 function loadStats(){
   try{ return JSON.parse(localStorage.getItem(STATS_KEY)||'{}'); }catch(e){ return {}; }
 }
@@ -4268,6 +4289,14 @@ function openStats(){
     <div class="stat-card" style="grid-column:1/-1">
       <div class="stat-val green">${s.examBest!==undefined?s.examBest+'/'+examData.length+' ('+Math.round(s.examBest/examData.length*100)+'%)':'—'}</div>
       <div class="stat-lbl">Mejor nota en el examen final</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--cyan)">${fmtTime(s.totalSec||0)}</div>
+      <div class="stat-lbl">⏱ Tiempo total en la app</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--magenta)">${s.sessions||0}</div>
+      <div class="stat-lbl">Sesiones de estudio</div>
     </div>`;
   document.getElementById('statsOverlay').classList.add('open');
 }
@@ -4653,7 +4682,7 @@ async function downloadSelf(){
     if(completed>0 && studentData.name){
       const sn=document.getElementById('studentName');
       if(sn){ sn.value=studentData.name; if(typeof checkName==='function') checkName(); }
-      setTimeout(()=>{ show('hub'); renderHub(); }, 100);
+      setTimeout(()=>{ show('hub'); renderHub(); sessionTimerStart(); }, 100);
     }
   }
 })();
