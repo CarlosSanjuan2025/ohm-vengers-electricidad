@@ -2483,6 +2483,34 @@ let completed = 0;    // sesiones completadas
 
 /* ---------------- persistencia (localStorage, funciona offline) ---------------- */
 const SAVE_KEY = 'ohmvengers_v1';
+/* ==================== REPORTE A GOOGLE SHEETS ==================== */
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbwKCinKexxL1pjcb4vuo99h8xxv6o28LQ0QHVayazR-fN4-754ZUeJyTOsSM3pbAUEg/exec';
+
+function reportarProgreso(){
+  if(!studentData.name) return; // no reportar sin datos del estudiante
+  try{
+    const st=loadStats();
+    const payload={
+      nombre:    studentData.name,
+      grado:     studentData.grado||'',
+      institucion: studentData.inst||'I.E.T.I. N.S. del Rosario',
+      completadas: completed,
+      progreso:  Math.round((completed/5)*100),
+      tiempoTotal: fmtTime(st.totalSec||0),
+      desafiosJugados: st.dqPlayed||0,
+      mejorPuntajeDesafio: st.dqBest!==undefined ? st.dqBest+'/10' : '—',
+      mejorNotaExamen: st.examBest!==undefined ? st.examBest+'/'+examData.length : '—'
+    };
+    fetch(SHEETS_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    }).catch(()=>{}); // silencioso si no hay internet
+  }catch(e){}
+}
+/* ==================== /REPORTE A GOOGLE SHEETS ==================== */
+
 function saveProgress(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify({
@@ -2961,7 +2989,7 @@ function answer(qEl,btn,qi,oi){
 function completeSession1(){
   completed = Math.max(completed, 1);
   unlocked  = Math.max(unlocked, 2);
-  saveProgress();
+  saveProgress(); reportarProgreso();
   goHub();
   renderHub();
 }
@@ -3108,7 +3136,7 @@ function s2ans(qEl,btn,qi,oi){
   }
 }
 function completeSession2(){
-  completed=Math.max(completed,2); unlocked=Math.max(unlocked,3); saveProgress(); goHub(); renderHub();
+  completed=Math.max(completed,2); unlocked=Math.max(unlocked,3); saveProgress(); reportarProgreso(); goHub(); renderHub();
 }
 
 
@@ -3385,7 +3413,7 @@ function s3ans(qEl,btn,qi,oi){
   }
 }
 function completeSession3(){
-  completed=Math.max(completed,3); unlocked=Math.max(unlocked,4); saveProgress(); goHub(); renderHub();
+  completed=Math.max(completed,3); unlocked=Math.max(unlocked,4); saveProgress(); reportarProgreso(); goHub(); renderHub();
 }
 
 
@@ -3655,7 +3683,7 @@ function s4ans(qEl,btn,qi,oi){
   }
 }
 function completeSession4(){
-  completed=Math.max(completed,4);unlocked=Math.max(unlocked,5);saveProgress();goHub();renderHub();
+  completed=Math.max(completed,4);unlocked=Math.max(unlocked,5);saveProgress();reportarProgreso();goHub();renderHub();
 }
 
 
@@ -4505,7 +4533,7 @@ function showCertificate(correct,pct,bonus,timeStr){
   const d=new Date();
   document.getElementById('certDate').textContent=d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
   saveToLeaderboard(studentName, studentData.grado, correct, pct, bonus||0, timeStr||'—');
-  completed=Math.max(completed,5); saveProgress();
+  completed=Math.max(completed,5); saveProgress(); reportarProgreso();
   gotoS5Step(2);
   setTimeout(()=>drawQR('certQR','https://carlossanjuan2025.github.io/ohm-vengers-electricidad/'), 100);
   setTimeout(launchConfetti, 400);
@@ -4596,7 +4624,7 @@ function launchConfetti(){
 }
 /* ==================== /CONFETI ==================== */
 function finishMission(){
-  completed=Math.max(completed,5); saveProgress();
+  completed=Math.max(completed,5); saveProgress(); reportarProgreso();
   goHub(); renderHub();
 }
 
