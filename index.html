@@ -4649,6 +4649,12 @@ async function downloadSelf(){
     // actualizar texto del botón para indicar continuación
     const eb=document.getElementById('enterBtn');
     if(eb && completed>0) eb.innerHTML='⚡ Continuar Misión';
+    // si ya completó al menos una sesión, ir directo al hub
+    if(completed>0 && studentData.name){
+      const sn=document.getElementById('studentName');
+      if(sn){ sn.value=studentData.name; if(typeof checkName==='function') checkName(); }
+      setTimeout(()=>{ show('hub'); renderHub(); }, 100);
+    }
   }
 })();
 
